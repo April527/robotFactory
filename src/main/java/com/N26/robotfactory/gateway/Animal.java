@@ -1,4 +1,4 @@
-package com.N26.robotfactory;
+package com.N26.robotfactory.gateway;
 
 public interface Animal {
 

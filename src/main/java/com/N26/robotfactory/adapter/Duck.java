@@ -1,6 +1,8 @@
-package com.N26.robotfactory;
+package com.N26.robotfactory.adapter;
 
-public class Duck implements Animal{
+import com.N26.robotfactory.gateway.Animal;
+
+public class Duck implements Animal {
 
     @Override
     public String getAnimal() {

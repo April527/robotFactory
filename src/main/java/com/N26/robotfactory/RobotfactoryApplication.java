@@ -1,5 +1,8 @@
 package com.N26.robotfactory;
 
+import com.N26.robotfactory.gateway.AbstractFactory;
+import com.N26.robotfactory.gateway.Animal;
+import com.N26.robotfactory.gateway.ColorExample;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

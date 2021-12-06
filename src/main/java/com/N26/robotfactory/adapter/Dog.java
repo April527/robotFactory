@@ -1,6 +1,8 @@
-package com.N26.robotfactory;
+package com.N26.robotfactory.adapter;
 
-public class Dog implements Animal{
+import com.N26.robotfactory.gateway.Animal;
+
+public class Dog implements Animal {
     @Override
     public String getAnimal() {
         return "Dog";

@@ -1,5 +1,9 @@
 package com.N26.robotfactory;
 
+import com.N26.robotfactory.adapter.AnimalFactory;
+import com.N26.robotfactory.adapter.ColorFactory;
+import com.N26.robotfactory.gateway.AbstractFactory;
+
 public class FactoryProvider {
 
     public static AbstractFactory getFactory(String choice){
