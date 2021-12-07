@@ -1,20 +1,11 @@
 package com.N26.robotfactory.adapter;
 
-import com.N26.robotfactory.adapter.Purple;
-import com.N26.robotfactory.adapter.Red;
-import com.N26.robotfactory.gateway.AbstractFactory;
-import com.N26.robotfactory.gateway.ColorExample;
+public class FaceFactory {
 
-public class ColorFactory implements AbstractFactory<ColorExample> {
-    @Override
-    public ColorExample create(String color) {
+    public static final String HUMANOID = "HUMANOID";
+    public static final String LCD = "LCD";
+    public static final String STEAMPUNK = "STEAMPUNK";
 
-        if ("Purple".equalsIgnoreCase(color)) {
-            return new Purple();
-        } else if ("Red".equalsIgnoreCase(color)) {
-            return new Red();
-        }
 
-        return null;
-    }
+
 }

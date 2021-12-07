@@ -1,4 +1,4 @@
-package com.N26.robotfactory.domain;
+package com.N26.robotfactory.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

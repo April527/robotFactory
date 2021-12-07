@@ -1,4 +1,4 @@
-package com.N26.robotfactory.adapter;
+package com.N26.robotfactory.gateway;
 
 public interface IConexion {
     void conectar();

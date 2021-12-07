@@ -1,8 +1,7 @@
 package com.N26.robotfactory.entrypoints;
 
-import com.N26.robotfactory.domain.Component;
+import com.N26.robotfactory.domain.model.Component;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("api_robotFactory")

@@ -1,8 +1,6 @@
 package com.N26.robotfactory;
 
-import com.N26.robotfactory.gateway.AbstractFactory;
-import com.N26.robotfactory.gateway.Animal;
-import com.N26.robotfactory.gateway.ColorExample;
+import com.N26.robotfactory.gateway.IConexion;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,15 +10,19 @@ public class RobotfactoryApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RobotfactoryApplication.class, args);
 
-		AbstractFactory factoryAnimal = FactoryProvider.getFactory("Animal");
-		Animal animal = (Animal) factoryAnimal.create("Dog");
+		ConexionFabrica fabrica = new ConexionFabrica();
 
-		System.out.println(animal.getAnimal());
+		IConexion cx1 = fabrica.getConexion("ORACLE");
+		cx1.conectar();
+		cx1.desconectar();
 
-		AbstractFactory factoryColor = FactoryProvider.getFactory("Color");
-		ColorExample colorExample = (ColorExample) factoryColor.create("Red");
+		IConexion cx2 = fabrica.getConexion("MYSQL");
+		cx2.conectar();
+		cx2.desconectar();
 
-		System.out.println(colorExample.getColor());
+		IConexion cx3 = fabrica.getConexion("H3");
+		cx3.conectar();
+		cx3.desconectar();
 
 	}
 
