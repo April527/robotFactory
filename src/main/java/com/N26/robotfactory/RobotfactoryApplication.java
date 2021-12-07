@@ -1,6 +1,6 @@
 package com.N26.robotfactory;
 
-import com.N26.robotfactory.gateway.IConexion;
+import com.N26.robotfactory.gateway.IRobot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,19 +10,19 @@ public class RobotfactoryApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RobotfactoryApplication.class, args);
 
-		ConexionFabrica fabrica = new ConexionFabrica();
+	/*	RobotFactory fabrica = new RobotFactory();
 
-		IConexion cx1 = fabrica.getConexion("ORACLE");
-		cx1.conectar();
-		cx1.desconectar();
+		IRobot cx1 = fabrica.getConexion("ORACLE");
+		cx1.findPrice();
+		cx1.updateStock();
 
-		IConexion cx2 = fabrica.getConexion("MYSQL");
-		cx2.conectar();
-		cx2.desconectar();
+		IRobot cx2 = fabrica.getConexion("MYSQL");
+		cx2.findPrice();
+		cx2.updateStock();
 
-		IConexion cx3 = fabrica.getConexion("H3");
-		cx3.conectar();
-		cx3.desconectar();
+		IRobot cx3 = fabrica.getConexion("H3");
+		cx3.findPrice();
+		cx3.updateStock();*/
 
 	}
 
