@@ -10,12 +10,12 @@ public class RobotMobility implements IRobot {
     public static final String TRACKS = "TRACKS";
 
     @Override
-    public void findPrice() {
+    public void findPrice(String productCode) {
 
     }
 
     @Override
-    public void updateStock() {
+    public void updateStock(String unitNumber) {
 
     }
 }

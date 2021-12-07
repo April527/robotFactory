@@ -10,12 +10,12 @@ public class RobotFace implements IRobot {
 
 
     @Override
-    public void findPrice() {
+    public void findPrice(String productCode) {
 
     }
 
     @Override
-    public void updateStock() {
+    public void updateStock(String unitNumber) {
 
     }
 }

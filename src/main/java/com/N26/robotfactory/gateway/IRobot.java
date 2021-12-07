@@ -1,7 +1,7 @@
 package com.N26.robotfactory.gateway;
 
 public interface IRobot {
-    void findPrice();
-    void updateStock();
+    void findPrice (String productCode);
+    void updateStock (String unitNumber);
 
 }

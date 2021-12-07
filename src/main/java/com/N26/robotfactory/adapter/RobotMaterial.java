@@ -8,12 +8,12 @@ public class RobotMaterial implements IRobot {
     public static final String METALLIC = "METALLIC";
 
     @Override
-    public void findPrice() {
+    public void findPrice(String productCode) {
 
     }
 
     @Override
-    public void updateStock() {
+    public void updateStock(String unitNumber) {
 
     }
 }
