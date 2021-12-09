@@ -10,8 +10,9 @@ public class RobotMobility implements IRobot {
     public static final String TRACKS = "TRACKS";
 
     @Override
-    public void findPrice(String productCode) {
+    public Double findPrice(String productCode) {
 
+        return null;
     }
 
     @Override

@@ -9,8 +9,9 @@ public class RobotArm implements IRobot {
 
 
     @Override
-    public void findPrice(String productCode) {
+    public Double findPrice(String productCode) {
 
+        return null;
     }
 
     @Override

@@ -8,8 +8,9 @@ public class RobotMaterial implements IRobot {
     public static final String METALLIC = "METALLIC";
 
     @Override
-    public void findPrice(String productCode) {
+    public Double findPrice(String productCode) {
 
+        return null;
     }
 
     @Override

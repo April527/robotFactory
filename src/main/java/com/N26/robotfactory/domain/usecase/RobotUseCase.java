@@ -1,7 +1,9 @@
 package com.N26.robotfactory.domain.usecase;
 
+import com.N26.robotfactory.RobotFactory;
 import com.N26.robotfactory.domain.model.Component;
 import com.N26.robotfactory.domain.model.PairedElement;
+import com.N26.robotfactory.gateway.IRobot;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.stream.Stream;
 public class RobotUseCase {
 
     public String sellRobot(List<String> components) {
+
+        // Set component list
 
         final String FACE = "FACE";
         final String MATERIAL = "MATERIAL";
@@ -33,7 +37,20 @@ public class RobotUseCase {
                                                 })
                                                 .collect(Collectors.toList());
 
+         //Calculate elements total
+
+         Double total = calculateFullRobotPrice(FACE, "A");
+
+
         return "total";
+    }
+
+    private Double calculateFullRobotPrice(String componentName, String componentCode) {
+
+        RobotFactory robotFactory = new RobotFactory();
+        IRobot robotComponent = robotFactory.getRobotParts(componentName);
+        return robotComponent.findPrice(componentCode);
+
     }
 
 }
