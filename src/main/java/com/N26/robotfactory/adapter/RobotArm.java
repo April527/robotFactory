@@ -20,6 +20,7 @@ public class RobotArm implements IRobot {
 
     @Override
     public void updateStock(String unitNumber) {
-
+        stockRepository.setInitialRobotPartStock();
+        stockRepository.updateRobotPartsStock(unitNumber);
     }
 }
