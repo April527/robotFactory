@@ -41,8 +41,16 @@ public class RobotUseCase {
 
          Double total = calculateFullRobotPrice(FACE, "A");
 
+         updateStock(FACE, "A");
+         updateStock(MATERIAL, "I");
 
         return "total";
+    }
+
+    private void updateStock(String componentName, String componentCode) {
+        RobotFactory robotFactory = new RobotFactory();
+        IRobot robotComponent = robotFactory.getRobotParts(componentName);
+        robotComponent.updateStock(componentCode);
     }
 
     private Double calculateFullRobotPrice(String componentName, String componentCode) {
