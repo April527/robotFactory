@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PairedElement {
-    private String element;
-    private String typeElement;
+public class PairedComponent {
+    private String componentName;
+    private String componentCode;
 }

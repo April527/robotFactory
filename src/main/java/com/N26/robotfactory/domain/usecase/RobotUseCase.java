@@ -1,8 +1,7 @@
 package com.N26.robotfactory.domain.usecase;
 
 import com.N26.robotfactory.RobotFactory;
-import com.N26.robotfactory.domain.model.Component;
-import com.N26.robotfactory.domain.model.PairedElement;
+import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.gateway.IRobot;
 import lombok.AllArgsConstructor;
 
@@ -16,9 +15,20 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class RobotUseCase {
 
-    public String sellRobot(List<String> components) {
+    public Double placeRobotOrder(List<String> components) {
 
-        // Set component list
+        return setComponentsList(components)
+                .stream()
+                .map(pairedComponent -> calculateFullRobotPrice(pairedComponent.getComponentName(), pairedComponent.getComponentCode()))
+                .mapToDouble(a -> a)
+                .sum();
+
+
+     //    updateStock(FACE, "A");
+
+    }
+
+    private List<PairedComponent> setComponentsList(List<String> components) {
 
         final String FACE = "FACE";
         final String MATERIAL = "MATERIAL";
@@ -27,36 +37,29 @@ public class RobotUseCase {
 
         List<String> componentsName = Arrays.asList(FACE,MATERIAL,ARM,MOBILITY);
 
-        List<PairedElement> pairedElementList = new ArrayList<>();
+        List<PairedComponent> pairedComponentList = new ArrayList<>();
 
-         IntStream.range(0,componentsName.size())
-                                                .boxed()
-                                                .flatMap(i ->{
-                                                    pairedElementList.add(new PairedElement(componentsName.get(i), components.get(i)));
-                                                    return Stream.of(pairedElementList) ;
-                                                })
-                                                .collect(Collectors.toList());
+        IntStream.range(0,componentsName.size())
+                .boxed()
+                .flatMap(i ->{
+                    pairedComponentList.add(new PairedComponent(componentsName.get(i), components.get(i)));
+                    return Stream.of(pairedComponentList) ;
+                })
+                .collect(Collectors.toList());
 
-         //Calculate elements total
-
-         Double total = calculateFullRobotPrice(FACE, "A");
-
-         updateStock(FACE, "A");
-         updateStock(MATERIAL, "I");
-
-        return "total";
+        return pairedComponentList;
     }
 
-    private void updateStock(String componentName, String componentCode) {
+    private void setOrUpdateStock(PairedComponent pairedComponent) {
         RobotFactory robotFactory = new RobotFactory();
-        IRobot robotComponent = robotFactory.getRobotParts(componentName);
-        robotComponent.updateStock(componentCode);
+        IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
+        robotComponent.updateStock(pairedComponent.getComponentCode());
     }
 
     private Double calculateFullRobotPrice(String componentName, String componentCode) {
 
-        RobotFactory robotFactory = new RobotFactory();
-        IRobot robotComponent = robotFactory.getRobotParts(componentName);
+        RobotFactory robotFactory = new RobotFactory(); //TODO: use @Autowired
+        IRobot robotComponent = robotFactory.getRobotParts(componentName); //TODO: use @Autowired
         return robotComponent.findPrice(componentCode);
 
     }
