@@ -1,7 +1,11 @@
 package com.N26.robotfactory.adapter;
 
 import com.N26.robotfactory.data.StockRepository;
+import com.N26.robotfactory.domain.model.ComponentInventory;
+import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.gateway.IRobot;
+
+import java.util.List;
 
 public class RobotFace implements IRobot {
 
@@ -19,8 +23,17 @@ public class RobotFace implements IRobot {
     }
 
     @Override
-    public void updateStock(String unitNumber) {
-        stockRepository.setInitialRobotPartStock();
-        stockRepository.updateRobotPartsStock(unitNumber);
+    public List<ComponentInventory> setStock() {
+
+       return stockRepository.setInitialRobotPartStock();
+
+    }
+
+    @Override
+    public PairedComponent updateStock( PairedComponent pairedComponent) {
+
+        stockRepository.updateRobotPartsStock(pairedComponent.getComponentCode());
+
+        return pairedComponent;
     }
 }

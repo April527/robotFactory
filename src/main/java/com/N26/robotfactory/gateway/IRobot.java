@@ -1,7 +1,13 @@
 package com.N26.robotfactory.gateway;
 
+import com.N26.robotfactory.domain.model.ComponentInventory;
+import com.N26.robotfactory.domain.model.PairedComponent;
+
+import java.util.List;
+
 public interface IRobot {
     Double findPrice (String productCode);
-    void updateStock (String componentCode);
+    List<ComponentInventory> setStock();
+    PairedComponent updateStock( PairedComponent componentCode);
 
 }

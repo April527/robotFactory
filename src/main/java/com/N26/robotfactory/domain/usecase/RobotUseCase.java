@@ -1,9 +1,13 @@
 package com.N26.robotfactory.domain.usecase;
 
 import com.N26.robotfactory.RobotFactory;
+import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.gateway.IRobot;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,13 +23,20 @@ public class RobotUseCase {
 
         return setComponentsList(components)
                 .stream()
-                .map(pairedComponent -> calculateFullRobotPrice(pairedComponent.getComponentName(), pairedComponent.getComponentCode()))
+                .map(pairedComponent -> setInitialComponentList(pairedComponent))
+                .map(pairedElement -> updateStock(pairedElement.getT2()))
+                .map(component -> calculateFullRobotPrice(component.getComponentName(), component.getComponentCode()))
                 .mapToDouble(a -> a)
                 .sum();
 
+    }
 
-     //    updateStock(FACE, "A");
+    private Tuple2<List<ComponentInventory>, PairedComponent>  setInitialComponentList( PairedComponent pairedComponent) {
 
+        RobotFactory robotFactory = new RobotFactory();
+        IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
+
+        return Tuples.of(robotComponent.setStock(), pairedComponent);
     }
 
     private List<PairedComponent> setComponentsList(List<String> components) {
@@ -50,10 +61,10 @@ public class RobotUseCase {
         return pairedComponentList;
     }
 
-    private void setOrUpdateStock(PairedComponent pairedComponent) {
+    private PairedComponent updateStock( PairedComponent pairedComponent) {
         RobotFactory robotFactory = new RobotFactory();
         IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
-        robotComponent.updateStock(pairedComponent.getComponentCode());
+        return robotComponent.updateStock( pairedComponent);
     }
 
     private Double calculateFullRobotPrice(String componentName, String componentCode) {
