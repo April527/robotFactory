@@ -22,7 +22,7 @@ public class EmptyRobot implements IRobot {
 
 
     @Override
-    public PairedComponent updateStock( PairedComponent unitNumber) {
-        return PairedComponent.builder().build();
+    public void updateStock( List<ComponentInventory> componentInventory, List<String> components) {
+
     }
 }

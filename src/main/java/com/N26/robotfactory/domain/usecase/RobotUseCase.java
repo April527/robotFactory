@@ -23,8 +23,8 @@ public class RobotUseCase {
 
         return setComponentsList(components)
                 .stream()
-                .map(pairedComponent -> setInitialComponentList(pairedComponent))
-                .map(pairedElement -> updateStock(pairedElement.getT2()))
+                .map(this::setInitialComponentList)
+                .map(pairedElement -> updateStock(pairedElement.getT1(), components,pairedElement.getT2()))
                 .map(component -> calculateFullRobotPrice(component.getComponentName(), component.getComponentCode()))
                 .mapToDouble(a -> a)
                 .sum();
@@ -61,10 +61,11 @@ public class RobotUseCase {
         return pairedComponentList;
     }
 
-    private PairedComponent updateStock( PairedComponent pairedComponent) {
+    private PairedComponent updateStock( List<ComponentInventory> componentInventory,  List<String> components, PairedComponent pairedComponent) {
         RobotFactory robotFactory = new RobotFactory();
         IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
-        return robotComponent.updateStock( pairedComponent);
+        robotComponent.updateStock( componentInventory , components);
+        return pairedComponent;
     }
 
     private Double calculateFullRobotPrice(String componentName, String componentCode) {

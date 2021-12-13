@@ -31,10 +31,9 @@ public class RobotMobility implements IRobot {
     }
 
     @Override
-    public PairedComponent updateStock( PairedComponent pairedComponent) {
+    public void updateStock( List<ComponentInventory> componentInventory, List<String> components) {
 
-        stockRepository.updateRobotPartsStock(pairedComponent.getComponentCode());
+        stockRepository.updateRobotPartsStock(componentInventory, components);
 
-        return pairedComponent;
     }
 }

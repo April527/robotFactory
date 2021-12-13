@@ -11,11 +11,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class StockRepository {
 
-     List<ComponentInventory> robotPartStocks = new ArrayList<>();
+    final List<ComponentInventory> robotPartStocks = new ArrayList<>();
 
     public List<ComponentInventory> setInitialRobotPartStock(){
 
@@ -39,10 +38,11 @@ public class StockRepository {
                 .orElse(ComponentInventory.builder().build());
     }
 
-    public void updateRobotPartsStock(String componentCode) {
-         robotPartStocks.stream()
+    public void updateRobotPartsStock(List<ComponentInventory> componentInventory, List<String> components) {
+
+        componentInventory.stream()
                  .forEach(x ->{
-                     if (x.getCode().equals(componentCode)){
+                     if (components.contains(x.getCode())){
                          x.setAvailable(x.getAvailable() - 1);
                      }
                  });

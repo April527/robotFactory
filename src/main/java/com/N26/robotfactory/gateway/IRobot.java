@@ -8,6 +8,6 @@ import java.util.List;
 public interface IRobot {
     Double findPrice (String productCode);
     List<ComponentInventory> setStock();
-    PairedComponent updateStock( PairedComponent componentCode);
+    void updateStock( List<ComponentInventory> componentInventory, List<String> components);
 
 }
