@@ -4,6 +4,7 @@ import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;

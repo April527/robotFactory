@@ -1,12 +1,10 @@
 package com.N26.robotfactory.adapter;
 
-
 import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.gateway.IRobot;
 
 import java.util.List;
-
 
 public class RobotMobility implements IRobot {
 
