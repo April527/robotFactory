@@ -1,7 +1,6 @@
 package com.N26.robotfactory.adapter;
 
 import com.N26.robotfactory.domain.model.ComponentInventory;
-import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.gateway.IRobot;
 
 import java.util.Arrays;

@@ -3,16 +3,12 @@ package com.N26.robotfactory.adapter;
 
 import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
-import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.gateway.IRobot;
 
 import java.util.List;
 
-public class RobotMobility implements IRobot {
 
-    public static final String WHEELS = "WHEELS";
-    public static final String LEGS = "LEGS";
-    public static final String TRACKS = "TRACKS";
+public class RobotMobility implements IRobot {
 
     StockRepository stockRepository = new StockRepository();
 

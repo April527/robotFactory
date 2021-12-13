@@ -6,7 +6,6 @@ import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.domain.model.ResponseRobotFactory;
 import com.N26.robotfactory.gateway.IRobot;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -20,6 +19,8 @@ import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class RobotUseCase {
+
+    private RobotFactory robotFactory;
 
     public ResponseRobotFactory placeRobotOrder(List<String> components) {
 
@@ -46,7 +47,6 @@ public class RobotUseCase {
 
     private Tuple2<List<ComponentInventory>, PairedComponent>  setInitialComponentList( PairedComponent pairedComponent) {
 
-        RobotFactory robotFactory = new RobotFactory();
         IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
 
         return Tuples.of(robotComponent.setStock(), pairedComponent);
@@ -75,7 +75,7 @@ public class RobotUseCase {
     }
 
     private Tuple2<PairedComponent, List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<String> components, PairedComponent pairedComponent) {
-        RobotFactory robotFactory = new RobotFactory();
+
         IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
         robotComponent.updateStock( componentInventory , components);
         return Tuples.of(pairedComponent, componentInventory);
@@ -83,8 +83,7 @@ public class RobotUseCase {
 
     private Double calculateFullRobotPrice(List<ComponentInventory> componentInventory, String componentName, String componentCode) {
 
-        RobotFactory robotFactory = new RobotFactory(); //TODO: use @Autowired
-        IRobot robotComponent = robotFactory.getRobotParts(componentName); //TODO: use @Autowired
+        IRobot robotComponent = robotFactory.getRobotParts(componentName);
         return robotComponent.findPrice(componentInventory, componentCode);
 
     }

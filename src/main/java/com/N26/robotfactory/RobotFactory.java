@@ -2,7 +2,9 @@ package com.N26.robotfactory;
 
 import com.N26.robotfactory.adapter.*;
 import com.N26.robotfactory.gateway.IRobot;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RobotFactory {
 
     public static final String FACE = "FACE";

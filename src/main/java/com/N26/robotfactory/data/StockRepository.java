@@ -1,12 +1,12 @@
 package com.N26.robotfactory.data;
 
-import com.N26.robotfactory.domain.model.Component;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
