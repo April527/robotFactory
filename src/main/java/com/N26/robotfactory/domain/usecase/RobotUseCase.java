@@ -3,6 +3,7 @@ package com.N26.robotfactory.domain.usecase;
 import com.N26.robotfactory.RobotFactory;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.model.PairedComponent;
+import com.N26.robotfactory.domain.model.ResponseRobotFactory;
 import com.N26.robotfactory.gateway.IRobot;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import reactor.util.function.Tuples;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -19,16 +21,27 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class RobotUseCase {
 
-    public Double placeRobotOrder(List<String> components) {
+    public ResponseRobotFactory placeRobotOrder(List<String> components) {
 
+        return ResponseRobotFactory.builder()
+                .order_id(generateOrder_Id())
+                .total(getRobotFactoryTotal(components))
+                .build();
+
+    }
+
+    private String generateOrder_Id(){
+        return UUID.randomUUID().toString();
+    }
+
+    private Double getRobotFactoryTotal(List<String> components) {
         return setComponentsList(components)
                 .stream()
                 .map(this::setInitialComponentList)
                 .map(pairedElement -> updateStock(pairedElement.getT1(), components,pairedElement.getT2()))
                 .map(component -> calculateFullRobotPrice(component.getT2(), component.getT1().getComponentName(), component.getT1().getComponentCode()))
-                .mapToDouble(a -> a)
+                .mapToDouble(price -> price)
                 .sum();
-
     }
 
     private Tuple2<List<ComponentInventory>, PairedComponent>  setInitialComponentList( PairedComponent pairedComponent) {
