@@ -9,8 +9,9 @@ import java.util.List;
 
 public class EmptyRobot implements IRobot {
 
+
     @Override
-    public Double findPrice(String productCode) {
+    public Double findPrice(List<ComponentInventory> componentInventory,String productCode) {
 
         return null;
     }

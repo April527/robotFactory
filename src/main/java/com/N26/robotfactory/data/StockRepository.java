@@ -31,8 +31,8 @@ public class StockRepository {
         return robotPartStocks;
     }
 
-    public ComponentInventory findRobotPartStockByCode(String componentCode){
-       return robotPartStocks.stream()
+    public ComponentInventory findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
+       return componentInventory.stream()
                 .filter(x -> x.getCode().equals(componentCode))
                 .findAny()
                 .orElse(ComponentInventory.builder().build());

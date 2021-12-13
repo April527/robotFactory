@@ -6,7 +6,7 @@ import com.N26.robotfactory.domain.model.PairedComponent;
 import java.util.List;
 
 public interface IRobot {
-    Double findPrice (String productCode);
+    Double findPrice (List<ComponentInventory> componentInventory, String productCode);
     List<ComponentInventory> setStock();
     void updateStock( List<ComponentInventory> componentInventory, List<String> components);
 

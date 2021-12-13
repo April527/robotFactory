@@ -16,10 +16,9 @@ public class RobotArm implements IRobot {
     StockRepository stockRepository = new StockRepository();
 
     @Override
-    public Double findPrice(String productCode) {
+    public Double findPrice(List<ComponentInventory> componentInventory, String productCode) {
 
-        stockRepository.setInitialRobotPartStock();
-        return stockRepository.findRobotPartStockByCode(productCode).getPrice();
+        return stockRepository.findRobotPartStockByCode(componentInventory, productCode).getPrice();
     }
 
     @Override
