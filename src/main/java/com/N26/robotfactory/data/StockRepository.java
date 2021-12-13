@@ -1,5 +1,6 @@
 package com.N26.robotfactory.data;
 
+import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,8 @@ import java.util.List;
 public class StockRepository {
 
     final List<ComponentInventory> robotPartStocks = new ArrayList<>();
+
+    public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
     public List<ComponentInventory> setInitialRobotPartStock(){
 
@@ -39,15 +42,34 @@ public class StockRepository {
                 .orElse(ComponentInventory.builder().build());
     }
 
+
     public void updateRobotPartsStock(List<ComponentInventory> componentInventory, List<String> components) {
 
-        componentInventory.stream()
-                 .forEach(x ->{
-                     if (components.contains(x.getCode())){
-                         x.setAvailable(x.getAvailable() - 1);
-                     }
-                 });
+        components
+                .forEach(component -> {
+                    if(componentExists(componentInventory, component) && isComponentAvailable(componentInventory, component)){
+                        updateComponentStock(componentInventory, component);
+                    } else {
+                        throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
+                    }
+                });
 
-        Integer whatever = 1;
+    }
+
+    private void updateComponentStock(List<ComponentInventory> componentInventory, String component) {
+        componentInventory.stream()
+                .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
+                .forEach(x -> x.setAvailable(x.getAvailable() -1));
+    }
+
+    private boolean componentExists(List<ComponentInventory> componentInventory, String component) {
+       return componentInventory.stream()
+               .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component));
+    }
+
+    private boolean isComponentAvailable(List<ComponentInventory> componentInventory, String component) {
+
+        return this.findRobotPartStockByCode(componentInventory, component).getAvailable()>0;
+
     }
 }
