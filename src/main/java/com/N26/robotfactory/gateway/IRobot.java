@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IRobot {
     Double findPrice (List<ComponentInventory> componentInventory, String productCode);
-    void updateStock( List<ComponentInventory> componentInventory, List<String> components);
+    void updateStock( List<ComponentInventory> componentInventory, String componentCode);
 
 }

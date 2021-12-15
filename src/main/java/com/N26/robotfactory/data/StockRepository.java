@@ -40,16 +40,14 @@ public class StockRepository {
     }
 
 
-    public void updateRobotPartsStock(List<ComponentInventory> componentInventory, List<String> components) {
+    public void updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
 
-        components
-                .forEach(component -> {
-                    if(componentExists(componentInventory, component) && isComponentAvailable(componentInventory, component)){
-                        updateComponentStock(componentInventory, component);
+                    if(componentExists(componentInventory, componentCode) && isComponentAvailable(componentInventory, componentCode)){
+                        updateComponentStock(componentInventory, componentCode);
                     } else {
                         throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
                     }
-                });
+                ;
 
     }
 

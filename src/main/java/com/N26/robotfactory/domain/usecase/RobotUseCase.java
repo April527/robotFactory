@@ -41,7 +41,7 @@ public class RobotUseCase {
         return setComponentsList(components)
                 .stream()
                 .map(pairedComponent -> getRobotInventory(pairedComponent).getT1().isEmpty() ? setInitialComponentList(pairedComponent):getRobotInventory(pairedComponent))
-                .map(pairedElement -> updateStock(pairedElement.getT1(), components,pairedElement.getT2()))
+                .map(pairedElement -> updateStock(pairedElement.getT1(), pairedElement.getT2()))
                 .map(component -> calculateFullRobotPrice(component.getT2(), component.getT1().getComponentName(), component.getT1().getComponentCode()))
                 .mapToDouble(price -> price)
                 .sum();
@@ -78,10 +78,10 @@ public class RobotUseCase {
         return pairedComponentList;
     }
 
-    private Tuple2<PairedComponent, List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<String> components, PairedComponent pairedComponent) {
+    private Tuple2<PairedComponent, List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, PairedComponent pairedComponent) {
 
         IRobot robotComponent = robotFactory.getRobotParts(pairedComponent.getComponentName());
-        robotComponent.updateStock( componentInventory , components);
+        robotComponent.updateStock( componentInventory , pairedComponent.getComponentCode());
         return Tuples.of(pairedComponent, componentInventory);
     }
 

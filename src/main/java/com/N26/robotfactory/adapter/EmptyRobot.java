@@ -15,7 +15,7 @@ public class EmptyRobot implements IRobot {
     }
 
     @Override
-    public void updateStock( List<ComponentInventory> componentInventory, List<String> components) {
+    public void updateStock( List<ComponentInventory> componentInventory, String componentCode) {
 
     }
 }
