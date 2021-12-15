@@ -17,13 +17,6 @@ public class RobotMaterial implements IRobot {
     }
 
     @Override
-    public List<ComponentInventory> setStock() {
-
-         return  stockRepository.setInitialRobotPartStock();
-
-    }
-
-    @Override
     public void updateStock( List<ComponentInventory> componentInventory, List<String> components) {
 
         stockRepository.updateRobotPartsStock(componentInventory, components);

@@ -16,8 +16,8 @@ public class RobotFactoryController {
     @PostMapping("/orders")
     public ResponseRobotFactory robotOrders(@RequestBody Component components) {
 
-
         return robotUseCase.placeRobotOrder(components.getComponents());
+
     }
 
 }

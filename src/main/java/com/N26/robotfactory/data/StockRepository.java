@@ -3,9 +3,6 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +13,7 @@ import java.util.List;
 @Builder
 public class StockRepository {
 
-    final List<ComponentInventory> robotPartStocks = new ArrayList<>();
+    final static List<ComponentInventory> robotPartStocks = new ArrayList<>();
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
@@ -71,5 +68,9 @@ public class StockRepository {
 
         return this.findRobotPartStockByCode(componentInventory, component).getAvailable()>0;
 
+    }
+
+    public List<ComponentInventory> getRobotPartStock() {
+        return robotPartStocks;
     }
 }
