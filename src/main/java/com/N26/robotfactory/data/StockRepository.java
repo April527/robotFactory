@@ -40,7 +40,7 @@ public class StockRepository {
     }
 
 
-    public void updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
+    public synchronized void updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
 
                     if(componentExists(componentInventory, componentCode) && isComponentAvailable(componentInventory, componentCode)){
                         updateComponentStock(componentInventory, componentCode);
