@@ -4,6 +4,7 @@ import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +20,16 @@ public class StockRepository {
 
     public List<ComponentInventory> setInitialRobotPartStock(){
 
-        robotPartStocks.add(new ComponentInventory("A", 10.28, 9, "Humanoid Face"));
-        robotPartStocks.add(new ComponentInventory("B", 24.07, 7, "LCD Face"));
-        robotPartStocks.add(new ComponentInventory("C", 13.30, 0, "Steampunk Face"));
-        robotPartStocks.add(new ComponentInventory("D", 28.94, 1, "Arms with Hands"));
-        robotPartStocks.add(new ComponentInventory("E", 12.39, 3, "Arms with Grippers"));
-        robotPartStocks.add(new ComponentInventory("F", 30.77, 2, "Mobility with Wheels"));
-        robotPartStocks.add(new ComponentInventory("G", 55.13, 15, "Arms with Hands"));
-        robotPartStocks.add(new ComponentInventory("H", 50.00, 7, "Arms with Grippers"));
-        robotPartStocks.add(new ComponentInventory("I", 90.12, 92, "Mobility with Wheels"));
-        robotPartStocks.add(new ComponentInventory("J", 82.31, 15, "Mobility with Wheels"));
+        robotPartStocks.add(new ComponentInventory("A", new BigDecimal(10.28), 9, "Humanoid Face"));
+        robotPartStocks.add(new ComponentInventory("B", new BigDecimal(24.07), 7, "LCD Face"));
+        robotPartStocks.add(new ComponentInventory("C", new BigDecimal(13.30), 0, "Steampunk Face"));
+        robotPartStocks.add(new ComponentInventory("D", new BigDecimal(28.94), 1, "Arms with Hands"));
+        robotPartStocks.add(new ComponentInventory("E", new BigDecimal(12.39), 3, "Arms with Grippers"));
+        robotPartStocks.add(new ComponentInventory("F", new BigDecimal(30.77), 2, "Mobility with Wheels"));
+        robotPartStocks.add(new ComponentInventory("G", new BigDecimal(55.13), 15, "Arms with Hands"));
+        robotPartStocks.add(new ComponentInventory("H", new BigDecimal(50.00), 7, "Arms with Grippers"));
+        robotPartStocks.add(new ComponentInventory("I", new BigDecimal(90.12), 92, "Mobility with Wheels"));
+        robotPartStocks.add(new ComponentInventory("J", new BigDecimal(82.31), 15, "Mobility with Wheels"));
         return robotPartStocks;
     }
 

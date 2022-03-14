@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,14 +39,14 @@ public class RobotUseCase {
         return UUID.randomUUID().toString();
     }
 
-    private Double getRobotFactoryTotal(List<String> components) {
+    private BigDecimal getRobotFactoryTotal(List<String> components) {
         return setComponentsList(components)
                 .stream()
                 .map(pairedComponent -> getRobotInventory(pairedComponent).getT1().isEmpty() ? setInitialComponentList(pairedComponent):getRobotInventory(pairedComponent))
                 .map(pairedElement -> updateStock(pairedElement.getT1(), pairedElement.getT2()))
                 .map(component -> calculateFullRobotPrice(component.getT2(), component.getT1().getComponentName(), component.getT1().getComponentCode()))
-                .mapToDouble(price -> price)
-                .sum();
+                .reduce(new BigDecimal(0), BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
 
     private Tuple2<List<ComponentInventory>, PairedComponent> getRobotInventory(PairedComponent pairedComponent) {
@@ -85,7 +87,7 @@ public class RobotUseCase {
         return Tuples.of(pairedComponent, componentInventory);
     }
 
-    private Double calculateFullRobotPrice(List<ComponentInventory> componentInventory, String componentName, String componentCode) {
+    private BigDecimal calculateFullRobotPrice(List<ComponentInventory> componentInventory, String componentName, String componentCode) {
 
         IRobot robotComponent = robotFactory.getRobotParts(componentName);
         return robotComponent.findPrice(componentInventory, componentCode);

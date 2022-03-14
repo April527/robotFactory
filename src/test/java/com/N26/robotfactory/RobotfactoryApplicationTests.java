@@ -1,11 +1,16 @@
 package com.N26.robotfactory;
 
+import com.N26.robotfactory.domain.usecase.RobotUseCase;
+import com.N26.robotfactory.gateway.IStock;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
+
+import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,6 +22,11 @@ class RobotfactoryApplicationTests {
 	@LocalServerPort
 	private int port;
 
+	@Autowired
+	RobotUseCase robotUseCase;
+
+	@Autowired
+	IStock stockRepository;
 
 	@Test
 	void contextLoads() {
@@ -33,6 +43,29 @@ class RobotfactoryApplicationTests {
 				.body("order_id", notNullValue())
 				.body("total", equalTo(160.11f));
 	}
+
+	@Test
+	public void shouldNotAllowInvalidBody() throws Exception {
+
+		postOrder("{" +
+				"  \"components\": \"BENDER\"" + " }")
+				.then()
+				.assertThat()
+				.statusCode(HttpStatus.BAD_REQUEST.value());
+	}
+
+	//TODO: Modify the code so this test works
+	@Test
+	public void shouldNotAllowInvalidRobotConfiguration() throws Exception {
+
+		postOrder("{" +
+				"  \"components\": [\"A\",\"C\",\"I\",\"D\"]" + " }")
+				.then()
+				.assertThat()
+				.statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+	}
+
+
 
 	public Response postOrder(String requestBody) throws Exception {
 
