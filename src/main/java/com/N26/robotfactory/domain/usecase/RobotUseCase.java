@@ -27,54 +27,27 @@ public class RobotUseCase {
     private RobotFactory robotFactory;
     private final IStock stockRepository;
 
-    /* public ResponseRobotFactory placeRobotOrder(List<String> components) {
+     public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
 
-        return ResponseRobotFactory.builder()
-                .order_id(generateOrder_Id())
-                .total(getRobotFactoryTotal(components))
-                .build();
+         List<List<String>> componentsList = setComponentsList(components);
 
-    }*/
+         return Mono.just(stockRepository.getStock())
+                 .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
+                 .zipWhen(componentInventory -> updateStock(componentInventory, componentsList))
+                 .flatMap(component -> calculateFullRobotPrice(component.getT1(), componentsList))
+                 .map(total -> buildRobotResponse(total));
+
+    }
 
     private String generateOrder_Id(){
         return UUID.randomUUID().toString();
     }
 
-    public Mono<BigDecimal> getRobotFactoryTotal(List<String> components) {
-
-        List<List<String>> componentsList = setComponentsList(components);
-
-       return Mono.just(stockRepository.getStock())
-                .map(stock -> stock.isEmpty()? stockRepository.getStock(): stockRepository.setStock())
-                .zipWhen(componentInventory -> updateStock(componentInventory, componentsList))
-                .map(component -> calculateFullRobotPrice(component.getT1(), componentsList))
-                .map(total -> total.setScale(2, RoundingMode.HALF_EVEN));
-
-      /*  Mono.just(setComponentsList(components))
-                .zipWhen(component -> stockRepository.getStock().isEmpty()? getRobotInventory(): setInitialComponentList())
-                .zipWhen(tupleComponentInventory -> updateStock(tupleComponentInventory.getT2(), tupleComponentInventory.getT1()))
-                .map(tupleComponentInventory2 -> calculateFullRobotPrice(tupleComponentInventory2.getT1().getT2(),
-                        tupleComponentInventory2.getT1().getT1().get(0).get(0),  tupleComponentInventory2.getT1().getT1().get(0).get(1)))
-                .map(price -> price.)
-                .reduce(new BigDecimal(0), BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_EVEN);*/
-
-  /*      return setComponentsList(components)
-                .stream()
-                .map(pairedComponent -> getRobotInventory(pairedComponent.).getT1().isEmpty() ? setInitialComponentList(pairedComponent):getRobotInventory(pairedComponent))
-                .map(pairedElement -> updateStock(pairedElement.getT1(), pairedElement.getT2()))
-                .map(component -> calculateFullRobotPrice(component.getT2(), component.getT1().getComponentName(), component.getT1().getComponentCode()))
-                .reduce(new BigDecimal(0), BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_EVEN);*/
-    }
-
-    private Mono<List<ComponentInventory>> getRobotInventory() {
-        return Mono.just(stockRepository.getStock());
-    }
-
-    private Mono<List<ComponentInventory>> setInitialComponentList() {
-
-        return Mono.just(stockRepository.setStock());
+    private ResponseRobotFactory buildRobotResponse(BigDecimal total) {
+        return ResponseRobotFactory.builder()
+                .order_id(generateOrder_Id())
+                .total(total)
+                .build();
     }
 
     private List<List<String>> setComponentsList(List<String> components) {
@@ -93,44 +66,26 @@ public class RobotUseCase {
                 })
                 .collect(Collectors.toList());
 
-        componentsTest.forEach(System.out::println);
-
         return componentsTest;
 
-   /*     return componentsName.stream()
-                .flatMap(componentName -> components.stream().map(component -> Arrays.asList(componentName, component)))
-                .collect(Collectors.toList());*/
-
-    /*    List<PairedComponent> pairedComponentList = new ArrayList<>();
-
-        IntStream.range(0,componentsName.size())
-                .boxed()
-                .flatMap(i ->{
-                    pairedComponentList.add(new PairedComponent(componentsName.get(i), components.get(i)));
-                    return Stream.of(pairedComponentList) ;
-                })
-                .collect(Collectors.toList());
-
-        return pairedComponentList;*/
     }
 
     private Mono<Void> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
-        //pairedComponents.forEach(System.out::println);
+        return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
+                .flatMap(robotComponent-> robotComponent.updateStock(componentInventory, pairedComponents.get(0).get(1)))
+                .then();
 
-       /* IRobot robotComponent = robotFactory.getRobotParts(pairedComponents.get(0).get(0));
-        robotComponent.updateStock( componentInventory , pairedComponents.get(0).get(1));*/
-
-        return Mono.empty();
 
     }
 
-    private BigDecimal calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
+    private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
-   /*     IRobot robotComponent = robotFactory.getRobotParts(componentName);
-        return robotComponent.findPrice(componentInventory, componentCode);*/
+        return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
+                .flatMap(robotComponent -> robotComponent.findPrice(componentInventory, pairedComponents.get(0).get(1)))
+                .map(componentInventory1 -> componentInventory1.getPrice().setScale(2, RoundingMode.HALF_EVEN));
 
-        return new BigDecimal(12);
+
 
     }
 

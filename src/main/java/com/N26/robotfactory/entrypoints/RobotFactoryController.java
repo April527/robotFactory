@@ -16,11 +16,11 @@ public class RobotFactoryController {
     RobotUseCase robotUseCase;
 
     @PostMapping("/orders")
-    public Mono<BigDecimal> robotOrders(@RequestBody Component components) {
+    public Mono<ResponseRobotFactory> robotOrders(@RequestBody Component components) {
 
-        //return robotUseCase.placeRobotOrder(components.getComponents());
+        return robotUseCase.placeRobotOrder(components.getComponents());
 
-        return robotUseCase.getRobotFactoryTotal(components.getComponents());
+
     }
 
 }

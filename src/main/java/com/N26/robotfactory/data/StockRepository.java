@@ -3,8 +3,10 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,39 +35,51 @@ public class StockRepository {
         return robotPartStocks;
     }
 
-    public ComponentInventory findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
-       return componentInventory.stream()
-                .filter(x -> x.getCode().equals(componentCode))
-                .findAny()
-                .orElse(ComponentInventory.builder().build());
+    public Mono<ComponentInventory> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
+
+        return Mono.just(componentInventory)
+                .map(componentInventoryList -> {
+                   return componentInventoryList.stream()
+                            .filter(component -> component.getCode().equals(componentCode))
+                            .findAny()
+                            .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + "1"));
+                })
+                .map(componentInventory1 -> componentInventory1);
     }
 
 
-    public synchronized void updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
+    public synchronized Mono<Void> updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
 
-                    if(componentExists(componentInventory, componentCode) && isComponentAvailable(componentInventory, componentCode)){
-                        updateComponentStock(componentInventory, componentCode);
-                    } else {
-                        throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
-                    }
-                ;
+            return isComponentAvailable(componentInventory, componentCode)
+                    .zipWhen(componentAvailable -> componentExists(componentInventory, componentCode))
+                            .filter(validations -> validations.getT1() && validations.getT2())
+                            .map(x -> updateComponentStock(componentInventory, componentCode))
+                            .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
+                            .then();
 
     }
 
-    private void updateComponentStock(List<ComponentInventory> componentInventory, String component) {
+    private Mono<Void> updateComponentStock(List<ComponentInventory> componentInventory, String component) {
+
         componentInventory.stream()
                 .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
                 .forEach(x -> x.setAvailable(x.getAvailable() -1));
+
+        return Mono.empty();
     }
 
-    private boolean componentExists(List<ComponentInventory> componentInventory, String component) {
-       return componentInventory.stream()
-               .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component));
+    private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, String component) {
+
+       return Mono.just(componentInventory)
+                       .map(componentInventoryList -> componentInventoryList.stream()
+                               .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component)));
+
     }
 
-    private boolean isComponentAvailable(List<ComponentInventory> componentInventory, String component) {
+    private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, String component) {
 
-        return this.findRobotPartStockByCode(componentInventory, component).getAvailable()>0;
+        return this.findRobotPartStockByCode(componentInventory, component)
+                .map(componentInventory1 -> componentInventory1.getAvailable()>0);
 
     }
 
