@@ -51,13 +51,13 @@ public class RobotUseCase {
     }
 
     private List<List<String>> setComponentsList(List<String> components) {
-
-        final String FACE = "FACE";
+//TODO Throw exception when the order is invalid
         final String MATERIAL = "MATERIAL";
+        final String FACE = "FACE";
         final String ARM = "HANDS";
         final String MOBILITY = "MOBILITY";
 
-        List<String> componentsName = Arrays.asList(FACE,MATERIAL,ARM,MOBILITY);
+        List<String> componentsName = Arrays.asList(MATERIAL,FACE,ARM, MOBILITY);
 
         List<List<String>> componentsTest = IntStream.range(0, componentsName.size())
                 .boxed()
@@ -72,9 +72,14 @@ public class RobotUseCase {
 
     private Mono<Void> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
-        return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
+         return Mono.just(pairedComponents)
+                 .map(pairedComponent -> pairedComponent.stream()
+                         .map(component -> Tuples.of(robotFactory.getRobotParts(component.get(0)), component))
+                         .map(robotComponent -> robotComponent.getT1().updateStock(componentInventory, robotComponent.getT2().get(1))))
+                 .then();
+     /*  return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
                 .flatMap(robotComponent-> robotComponent.updateStock(componentInventory, pairedComponents.get(0).get(1)))
-                .then();
+                .then();*/
 
 
     }

@@ -21,17 +21,17 @@ public class StockRepository {
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
     public List<ComponentInventory> setInitialRobotPartStock(){
-
+//TODO Write a method that rounds the bigDecimal to two decimal numbers
         robotPartStocks.add(new ComponentInventory("A", new BigDecimal(10.28), 9, "Humanoid Face"));
         robotPartStocks.add(new ComponentInventory("B", new BigDecimal(24.07), 7, "LCD Face"));
         robotPartStocks.add(new ComponentInventory("C", new BigDecimal(13.30), 0, "Steampunk Face"));
         robotPartStocks.add(new ComponentInventory("D", new BigDecimal(28.94), 1, "Arms with Hands"));
         robotPartStocks.add(new ComponentInventory("E", new BigDecimal(12.39), 3, "Arms with Grippers"));
         robotPartStocks.add(new ComponentInventory("F", new BigDecimal(30.77), 2, "Mobility with Wheels"));
-        robotPartStocks.add(new ComponentInventory("G", new BigDecimal(55.13), 15, "Arms with Hands"));
-        robotPartStocks.add(new ComponentInventory("H", new BigDecimal(50.00), 7, "Arms with Grippers"));
-        robotPartStocks.add(new ComponentInventory("I", new BigDecimal(90.12), 92, "Mobility with Wheels"));
-        robotPartStocks.add(new ComponentInventory("J", new BigDecimal(82.31), 15, "Mobility with Wheels"));
+        robotPartStocks.add(new ComponentInventory("G", new BigDecimal(55.13), 15, "Mobility with Legs"));
+        robotPartStocks.add(new ComponentInventory("H", new BigDecimal(50.00), 7, "Mobility with Tracks"));
+        robotPartStocks.add(new ComponentInventory("I", new BigDecimal(90.12), 92, "Material Bioplastic"));
+        robotPartStocks.add(new ComponentInventory("J", new BigDecimal(82.31), 15, "Material Metallic"));
         return robotPartStocks;
     }
 
@@ -61,11 +61,18 @@ public class StockRepository {
 
     private Mono<Void> updateComponentStock(List<ComponentInventory> componentInventory, String component) {
 
-        componentInventory.stream()
+        Mono.just(componentInventory)
+                .map(componentInventoryList -> componentInventoryList.stream()
+                        .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
+                        .map(x -> x.setAvailable(x.getAvailable() -1)))
+
+                .then();
+
+       /* componentInventory.stream()
                 .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
                 .forEach(x -> x.setAvailable(x.getAvailable() -1));
 
-        return Mono.empty();
+        return Mono.empty();*/
     }
 
     private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, String component) {
