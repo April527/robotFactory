@@ -11,7 +11,7 @@ public class EmptyRobot implements IRobot {
 
 
     @Override
-    public Mono<ComponentInventory> findPrice(List<ComponentInventory> componentInventory, String productCode) {
+    public Mono<BigDecimal> findPrice(List<ComponentInventory> componentInventory, String componentCode) {
 
         return null;
     }

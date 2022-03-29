@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface IRobot {
-    Mono<ComponentInventory> findPrice (List<ComponentInventory> componentInventory, String productCode);
+    Mono<BigDecimal> findPrice (List<ComponentInventory> componentInventory, String pairedComponents);
     Mono<Void> updateStock(List<ComponentInventory> componentInventory, String componentCode);
 
 }

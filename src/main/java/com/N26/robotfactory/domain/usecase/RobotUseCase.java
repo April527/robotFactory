@@ -2,24 +2,19 @@ package com.N26.robotfactory.domain.usecase;
 
 import com.N26.robotfactory.RobotFactory;
 import com.N26.robotfactory.domain.model.ComponentInventory;
-import com.N26.robotfactory.domain.model.PairedComponent;
 import com.N26.robotfactory.domain.model.ResponseRobotFactory;
-import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @AllArgsConstructor
 public class RobotUseCase {
@@ -28,6 +23,7 @@ public class RobotUseCase {
     private final IStock stockRepository;
 
      public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
+// TODO I could try streaming componentsList and apply the operations to each list element
 
          List<List<String>> componentsList = setComponentsList(components);
 
@@ -86,12 +82,16 @@ public class RobotUseCase {
 
     private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
-        return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
-                .flatMap(robotComponent -> robotComponent.findPrice(componentInventory, pairedComponents.get(0).get(1)))
-                .map(componentInventory1 -> componentInventory1.getPrice().setScale(2, RoundingMode.HALF_EVEN));
+         return Flux.fromIterable(pairedComponents)
+                 .flatMap(pairedComponentList -> findRobotPartPrice(componentInventory,pairedComponentList.get(0)))
+                 .reduce(new BigDecimal(0), BigDecimal::add);
 
+    }
 
+    private Mono<BigDecimal> findRobotPartPrice(List<ComponentInventory> componentInventory, String componentName) {
 
+         return Mono.just(robotFactory.getRobotParts(componentName))
+                 .flatMap(robotComponent -> robotComponent.findPrice(componentInventory, componentName));
     }
 
 }

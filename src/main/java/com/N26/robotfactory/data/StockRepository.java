@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -35,16 +36,23 @@ public class StockRepository {
         return robotPartStocks;
     }
 
-    public Mono<ComponentInventory> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
+    public Mono<BigDecimal> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
 
-        return Mono.just(componentInventory)
+   /*   return componentInventory.stream()
+                .filter(compInventory -> pairedComponents.stream()
+                        .anyMatch(pairedComponent ->
+                                pairedComponent.get(1).equals(compInventory.getCode())))
+              .map(componentInventory1 -> componentInventory1.getPrice())
+              .reduce(new BigDecimal(0), BigDecimal::add);*/
+
+       return Mono.just(componentInventory)
                 .map(componentInventoryList -> {
                    return componentInventoryList.stream()
                             .filter(component -> component.getCode().equals(componentCode))
                             .findAny()
                             .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + "1"));
                 })
-                .map(componentInventory1 -> componentInventory1);
+                .map(componentInventory1 -> componentInventory1.getPrice());
     }
 
 
@@ -61,18 +69,20 @@ public class StockRepository {
 
     private Mono<Void> updateComponentStock(List<ComponentInventory> componentInventory, String component) {
 
-        Mono.just(componentInventory)
-                .map(componentInventoryList -> componentInventoryList.stream()
-                        .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
-                        .map(x -> x.setAvailable(x.getAvailable() -1)))
+    /*    Mono.just(componentInventory)
+                .flatMap(componentInventoryList -> {
 
-                .then();
+                  return componentInventoryList.stream()
+                            .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
+                            .forEach(x -> x.setAvailable(x.getAvailable() -1));
+                        }
+                );*/
 
-       /* componentInventory.stream()
+        componentInventory.stream()
                 .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
                 .forEach(x -> x.setAvailable(x.getAvailable() -1));
 
-        return Mono.empty();*/
+        return Mono.empty();
     }
 
     private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, String component) {

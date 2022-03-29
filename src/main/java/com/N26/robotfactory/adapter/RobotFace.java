@@ -13,9 +13,9 @@ public class RobotFace implements IRobot {
     StockRepository stockRepository = new StockRepository();
 
     @Override
-    public Mono<ComponentInventory> findPrice(List<ComponentInventory> componentInventory, String productCode) {
+    public Mono<BigDecimal> findPrice(List<ComponentInventory> componentInventory, String componentCode) {
 
-        return stockRepository.findRobotPartStockByCode(componentInventory, productCode);
+        return stockRepository.findRobotPartStockByCode(componentInventory, componentCode);
     }
 
     @Override
