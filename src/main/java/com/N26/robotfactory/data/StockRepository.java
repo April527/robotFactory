@@ -59,34 +59,8 @@ public class StockRepository {
 
     public synchronized Mono<Void> updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
 
-            return isComponentAvailable(componentInventory, componentCode)
-                    .zipWhen(componentAvailable -> componentExists(componentInventory, componentCode))
-                            .filter(validations -> validations.getT1() && validations.getT2())
-                            .map(x -> updateComponentStock(componentInventory, componentCode))
-                            .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
-                            .then();
-
-    }
-
-    private Mono<Void> updateComponentStock(List<ComponentInventory> componentInventory, String component) {
-
-    /*    Mono.just(componentInventory)
-                .flatMap(componentInventoryList -> {
-
-                  return componentInventoryList.stream()
-                            .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
-                            .forEach(x -> x.setAvailable(x.getAvailable() -1));
-                        }
-                );*/
-
-      /*  componentInventory.stream()
-                .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
-                .forEach(x -> x.setAvailable(x.getAvailable() -1));
-
-        return Mono.empty();*/
-
         return Flux.fromIterable(componentInventory)
-                .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
+                .filter(componentInventory1 -> componentInventory1.getCode().equals(componentCode))
                 .map(x -> {
                     x.setAvailable(x.getAvailable() - 1);
                     return x;
@@ -94,20 +68,6 @@ public class StockRepository {
                 .then();
     }
 
-    private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, String component) {
-
-       return Mono.just(componentInventory)
-                       .map(componentInventoryList -> componentInventoryList.stream()
-                               .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component)));
-
-    }
-
-    private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, String component) {
-
-        return this.findRobotPartStockByCode(componentInventory, component)
-                .map(componentInventory1 -> componentInventory1.getAvailable()>0);
-
-    }
 
     public List<ComponentInventory> getRobotPartStock() {
         return robotPartStocks;

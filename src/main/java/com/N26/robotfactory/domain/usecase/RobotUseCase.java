@@ -1,6 +1,7 @@
 package com.N26.robotfactory.domain.usecase;
 
 import com.N26.robotfactory.RobotFactory;
+import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.model.ResponseRobotFactory;
 import com.N26.robotfactory.gateway.IRobot;
@@ -23,6 +24,8 @@ public class RobotUseCase {
     private RobotFactory robotFactory;
     private final IStock stockRepository;
 
+    public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
+
      public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
 // TODO I could try streaming componentsList and apply the operations to each list element
 
@@ -30,8 +33,8 @@ public class RobotUseCase {
 
          return Mono.just(stockRepository.getStock())
                  .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
-                 .zipWhen(componentInventory -> updateStock(componentInventory, componentsList))
-                 .flatMap(component -> calculateFullRobotPrice(component.getT1(), componentsList))
+                 .doOnSuccess(componentInventory -> updateStock(componentInventory, componentsList))
+                 .flatMap(componentInventory1 -> calculateFullRobotPrice(componentInventory1, componentsList))
                  .map(total -> buildRobotResponse(total));
 
     }
@@ -68,11 +71,12 @@ public class RobotUseCase {
     }
 
     private Mono<Void> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
-// Todo controlar cuando el filtro esta vacio
+
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(component -> isComponentAvailable(componentInventory, component))
                  .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
                  .map(robotComponent1 -> updateRobotStock(componentInventory, robotComponent1))
+                 .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
                  .then();
 
       /*   return Mono.just(pairedComponents)
@@ -111,16 +115,16 @@ public class RobotUseCase {
     private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
-                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList.get(0)))
+                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
                  .map(componentInventory1 -> componentInventory1.getPrice())
                  .reduce(new BigDecimal(0), BigDecimal::add);
 
     }
 
-    private Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String componentName) {
+    private Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, List<String> componentName) {
 
-         return Mono.just(robotFactory.getRobotParts(componentName))
-                 .flatMap(robotComponent -> robotComponent.findRobotPart(componentInventory, componentName))
+         return Mono.just(robotFactory.getRobotParts(componentName.get(0)))
+                 .flatMap(robotComponent -> robotComponent.findRobotPart(componentInventory, componentName.get(1)))
                  .map(componentInventory1 -> componentInventory1);
     }
 
