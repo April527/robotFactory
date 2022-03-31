@@ -3,6 +3,7 @@ package com.N26.robotfactory.domain.usecase;
 import com.N26.robotfactory.RobotFactory;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.model.ResponseRobotFactory;
+import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -67,31 +68,60 @@ public class RobotUseCase {
     }
 
     private Mono<Void> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
+// Todo controlar cuando el filtro esta vacio
+         return Flux.fromIterable(pairedComponents)
+                 .filterWhen(component -> isComponentAvailable(componentInventory, component))
+                 .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
+                 .map(robotComponent1 -> updateRobotStock(componentInventory, robotComponent1))
+                 .then();
 
-         return Mono.just(pairedComponents)
+      /*   return Mono.just(pairedComponents)
                  .map(pairedComponent -> pairedComponent.stream()
+                         .filter(component ->  isComponentAvailable(componentInventory, component))
                          .map(component -> Tuples.of(robotFactory.getRobotParts(component.get(0)), component))
                          .map(robotComponent -> robotComponent.getT1().updateStock(componentInventory, robotComponent.getT2().get(1))))
-                 .then();
-     /*  return Mono.just(robotFactory.getRobotParts(pairedComponents.get(0).get(0)))
-                .flatMap(robotComponent-> robotComponent.updateStock(componentInventory, pairedComponents.get(0).get(1)))
-                .then();*/
+                 .then();*/
 
 
+    }
+
+    private Mono<Void> updateRobotStock(List<ComponentInventory> componentInventory, List<String> robotComponent) {
+
+        IRobot robotPart = robotFactory.getRobotParts(robotComponent.get(0));
+
+        return robotPart.updateStock(componentInventory, robotComponent.get(1));
+    }
+
+    private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, List<String> component) {
+
+        return Mono.just(componentInventory)
+                .map(componentInventoryList -> componentInventoryList.stream()
+                        .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component.get(1))));
+
+    }
+
+    private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, List<String> component) {
+
+        IRobot robotPart = robotFactory.getRobotParts(component.get(0));
+
+         return robotPart.findRobotPart(componentInventory, component.get(1))
+                 .map(componentInventory1 -> componentInventory1.getAvailable() > 0);
     }
 
     private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
-                 .flatMap(pairedComponentList -> findRobotPartPrice(componentInventory,pairedComponentList.get(0)))
+                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList.get(0)))
+                 .map(componentInventory1 -> componentInventory1.getPrice())
                  .reduce(new BigDecimal(0), BigDecimal::add);
 
     }
 
-    private Mono<BigDecimal> findRobotPartPrice(List<ComponentInventory> componentInventory, String componentName) {
+    private Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String componentName) {
 
          return Mono.just(robotFactory.getRobotParts(componentName))
-                 .flatMap(robotComponent -> robotComponent.findPrice(componentInventory, componentName));
+                 .flatMap(robotComponent -> robotComponent.findRobotPart(componentInventory, componentName))
+                 .map(componentInventory1 -> componentInventory1);
     }
 
 }

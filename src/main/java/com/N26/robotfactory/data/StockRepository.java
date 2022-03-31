@@ -3,6 +3,7 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -36,7 +37,7 @@ public class StockRepository {
         return robotPartStocks;
     }
 
-    public Mono<BigDecimal> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
+    public Mono<ComponentInventory> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
 
    /*   return componentInventory.stream()
                 .filter(compInventory -> pairedComponents.stream()
@@ -52,7 +53,7 @@ public class StockRepository {
                             .findAny()
                             .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + "1"));
                 })
-                .map(componentInventory1 -> componentInventory1.getPrice());
+                .map(componentInventory1 -> componentInventory1);
     }
 
 
@@ -78,11 +79,19 @@ public class StockRepository {
                         }
                 );*/
 
-        componentInventory.stream()
+      /*  componentInventory.stream()
                 .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
                 .forEach(x -> x.setAvailable(x.getAvailable() -1));
 
-        return Mono.empty();
+        return Mono.empty();*/
+
+        return Flux.fromIterable(componentInventory)
+                .filter(componentInventory1 -> componentInventory1.getCode().equals(component))
+                .map(x -> {
+                    x.setAvailable(x.getAvailable() - 1);
+                    return x;
+                })
+                .then();
     }
 
     private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, String component) {

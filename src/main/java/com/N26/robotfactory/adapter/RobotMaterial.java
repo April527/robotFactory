@@ -13,7 +13,7 @@ public class RobotMaterial implements IRobot {
     StockRepository stockRepository = new StockRepository();
 
     @Override
-    public Mono<BigDecimal> findPrice(List<ComponentInventory> componentInventory, String componentCode) {
+    public Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String componentCode) {
 
         return stockRepository.findRobotPartStockByCode(componentInventory, componentCode);
     }
