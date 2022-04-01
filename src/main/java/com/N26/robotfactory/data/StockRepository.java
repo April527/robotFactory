@@ -39,13 +39,6 @@ public class StockRepository {
 
     public Mono<ComponentInventory> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
 
-   /*   return componentInventory.stream()
-                .filter(compInventory -> pairedComponents.stream()
-                        .anyMatch(pairedComponent ->
-                                pairedComponent.get(1).equals(compInventory.getCode())))
-              .map(componentInventory1 -> componentInventory1.getPrice())
-              .reduce(new BigDecimal(0), BigDecimal::add);*/
-
        return Mono.just(componentInventory)
                 .map(componentInventoryList -> {
                    return componentInventoryList.stream()

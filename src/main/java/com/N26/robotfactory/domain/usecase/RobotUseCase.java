@@ -33,8 +33,8 @@ public class RobotUseCase {
 
          return Mono.just(stockRepository.getStock())
                  .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
-                 .doOnSuccess(componentInventory -> updateStock(componentInventory, componentsList))
-                 .flatMap(componentInventory1 -> calculateFullRobotPrice(componentInventory1, componentsList))
+                 .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
+                 .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
                  .map(total -> buildRobotResponse(total));
 
     }
@@ -70,22 +70,14 @@ public class RobotUseCase {
 
     }
 
-    private Mono<Void> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
+    private Mono<List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(component -> isComponentAvailable(componentInventory, component))
                  .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
                  .map(robotComponent1 -> updateRobotStock(componentInventory, robotComponent1))
                  .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
-                 .then();
-
-      /*   return Mono.just(pairedComponents)
-                 .map(pairedComponent -> pairedComponent.stream()
-                         .filter(component ->  isComponentAvailable(componentInventory, component))
-                         .map(component -> Tuples.of(robotFactory.getRobotParts(component.get(0)), component))
-                         .map(robotComponent -> robotComponent.getT1().updateStock(componentInventory, robotComponent.getT2().get(1))))
-                 .then();*/
-
+                 .then(Mono.just(componentInventory));
 
     }
 
