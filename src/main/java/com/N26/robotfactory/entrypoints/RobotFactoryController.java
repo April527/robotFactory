@@ -18,7 +18,7 @@ public class RobotFactoryController {
     RobotUseCase robotUseCase;
 
     @PostMapping("/orders")
-    public Flux<ComponentInventory> robotOrders(@RequestBody Component components) {
+    public Mono<ResponseRobotFactory> robotOrders(@RequestBody Component components) {
 
         return robotUseCase.placeRobotOrder(components.getComponents());
 
