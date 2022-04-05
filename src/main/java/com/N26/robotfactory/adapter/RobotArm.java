@@ -3,6 +3,7 @@ package com.N26.robotfactory.adapter;
 import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.gateway.IRobot;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -19,9 +20,9 @@ public class RobotArm implements IRobot {
     }
 
     @Override
-    public Mono<Void> updateStock(List<ComponentInventory> componentInventory, String componentCode) {
+    public Flux<ComponentInventory> updateStock(String componentCode) {
 
-        return stockRepository.updateRobotPartsStock(componentInventory, componentCode);
+        return stockRepository.updateRobotPartsStock(componentCode);
 
     }
 }

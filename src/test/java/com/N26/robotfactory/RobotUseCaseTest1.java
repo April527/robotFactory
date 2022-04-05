@@ -61,7 +61,7 @@ public class RobotUseCaseTest1 {
 
         stockRepository.setStock();
 
-        robotComponent.updateStock(setInitialRobotPartStock(), "A");
+        robotComponent.updateStock( "A");
 
         List<ComponentInventory> finalStock = stockRepository.getStock();
 

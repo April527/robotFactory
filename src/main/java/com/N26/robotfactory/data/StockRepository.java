@@ -50,15 +50,33 @@ public class StockRepository {
     }
 
 
-    public synchronized Mono<Void> updateRobotPartsStock(List<ComponentInventory> componentInventory, String componentCode) {
-
-        return Flux.fromIterable(componentInventory)
-                .filter(componentInventory1 -> componentInventory1.getCode().equals(componentCode))
+    public synchronized Flux<ComponentInventory> updateRobotPartsStock(String componentCode) {
+        System.out.println("Entre al metodo updateRobotPartsStock");
+        return Flux.fromIterable(this.getRobotPartStock())
+                .filter(robotPartStock -> robotPartStock.getCode().equals(componentCode))
                 .map(x -> {
                     x.setAvailable(x.getAvailable() - 1);
                     return x;
                 })
-                .then();
+                .flatMap(componentInventory -> printComponentInventory(componentInventory));
+
+  /*      return Mono.just(this.getRobotPartStock())
+                .map(robotPartStock -> robotPartStock.stream()
+                        .map(robotPartStock2 -> printComponentInventory(robotPartStock2))
+                        .filter(robotPartStock1 -> robotPartStock1.getCode().equals(componentCode))
+                        .map(x -> {
+                            x.withAvailable(x.getAvailable() - 1);
+                            return x;
+                        })
+                )
+                .then();*/
+    }
+
+    private Mono<ComponentInventory> printComponentInventory(ComponentInventory s) {
+
+        System.out.println("Tengo " + s.getAvailable() + " " + s.getCode() + "disponibles");
+
+        return Mono.just(s);
     }
 
 

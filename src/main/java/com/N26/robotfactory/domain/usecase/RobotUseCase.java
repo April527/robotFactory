@@ -26,16 +26,16 @@ public class RobotUseCase {
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
-     public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
+     public Flux<ComponentInventory> placeRobotOrder(List<String> components) {
 // TODO I could try streaming componentsList and apply the operations to each list element
 
          List<List<String>> componentsList = setComponentsList(components);
-
-         return Mono.just(stockRepository.getStock())
-                 .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
-                 .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
-                 .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
-                 .map(total -> buildRobotResponse(total));
+      return   updateStock(stockRepository.setStock(), componentsList);
+       //  return //Mono.just(stockRepository.getStock())
+                // .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
+               //  .flatMap(componentInventory -> updateStock(componentInventory, componentsList));
+      /*           .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
+                 .map(total -> buildRobotResponse(total));*/
 
     }
 
@@ -70,22 +70,23 @@ public class RobotUseCase {
 
     }
 
-    private Mono<List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
+    private Flux<ComponentInventory> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(component -> isComponentAvailable(componentInventory, component))
                  .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
-                 .map(robotComponent1 -> updateRobotStock(componentInventory, robotComponent1))
-                 .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
-                 .then(Mono.just(componentInventory));
+                 .map(robotComponent1 -> updateRobotStock(robotComponent1))
+                 .flatMap(x ->x);
+            /*     .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
+                 .then(Mono.just(componentInventory));*/
 
     }
 
-    private Mono<Void> updateRobotStock(List<ComponentInventory> componentInventory, List<String> robotComponent) {
+    private Flux<ComponentInventory> updateRobotStock(List<String> robotComponent) {
 
         IRobot robotPart = robotFactory.getRobotParts(robotComponent.get(0));
 
-        return robotPart.updateStock(componentInventory, robotComponent.get(1));
+        return robotPart.updateStock(robotComponent.get(1));
     }
 
     private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, List<String> component) {
