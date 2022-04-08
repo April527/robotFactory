@@ -30,7 +30,7 @@ public class RobotUseCase {
 // TODO I could try streaming componentsList and apply the operations to each list element
 
          List<List<String>> componentsList = setComponentsList(components);
-  //    return   updateStock(stockRepository.setStock(), componentsList);
+
          return Mono.just(stockRepository.getStock())
                  .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
                  .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
@@ -73,11 +73,12 @@ public class RobotUseCase {
     private Mono<List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
-                 .filterWhen(component -> isComponentAvailable(componentInventory, component))
                  .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
+                 .filterWhen(component -> isComponentAvailable(componentInventory, component))
                  .map(robotComponent1 -> updateRobotStock(robotComponent1))
-                 .flatMap(x ->x)
-                 .switchIfEmpty(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
+                 .flatMap(componentInventory1 ->componentInventory1)
+                // .onErrorReturn(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
+                // .switchIfEmpty(Flux.error( new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
                  .then(Mono.just(componentInventory));
 
     }
@@ -90,7 +91,7 @@ public class RobotUseCase {
     }
 
     private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, List<String> component) {
-
+//TODO if the component doesn't exist, throw an exception
         return Mono.just(componentInventory)
                 .map(componentInventoryList -> componentInventoryList.stream()
                         .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component.get(1))));
@@ -102,7 +103,13 @@ public class RobotUseCase {
         IRobot robotPart = robotFactory.getRobotParts(component.get(0));
 
          return robotPart.findRobotPart(componentInventory, component.get(1))
-                 .map(componentInventory1 -> componentInventory1.getAvailable() > 0);
+                 .map(componentInventory1 -> {
+                   if(componentInventory1.getAvailable() > 0){
+                        return true;
+                   }else{
+                       throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
+                   }
+                 });
     }
 
     private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {

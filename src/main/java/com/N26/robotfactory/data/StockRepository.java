@@ -51,7 +51,7 @@ public class StockRepository {
 
 
     public synchronized Flux<ComponentInventory> updateRobotPartsStock(String componentCode) {
-        System.out.println("Entre al metodo updateRobotPartsStock");
+
         return Flux.fromIterable(this.getRobotPartStock())
                 .filter(robotPartStock -> robotPartStock.getCode().equals(componentCode))
                 .map(x -> {
@@ -59,17 +59,6 @@ public class StockRepository {
                     return x;
                 })
                 .flatMap(componentInventory -> printComponentInventory(componentInventory));
-
-  /*      return Mono.just(this.getRobotPartStock())
-                .map(robotPartStock -> robotPartStock.stream()
-                        .map(robotPartStock2 -> printComponentInventory(robotPartStock2))
-                        .filter(robotPartStock1 -> robotPartStock1.getCode().equals(componentCode))
-                        .map(x -> {
-                            x.withAvailable(x.getAvailable() - 1);
-                            return x;
-                        })
-                )
-                .then();*/
     }
 
     private Mono<ComponentInventory> printComponentInventory(ComponentInventory s) {
