@@ -21,4 +21,5 @@ public class EmptyRobot implements IRobot {
     public Flux<ComponentInventory> updateStock(String componentCode) {
         return Flux.empty();
     }
+
 }

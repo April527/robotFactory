@@ -25,4 +25,5 @@ public class RobotFace implements IRobot {
         return stockRepository.updateRobotPartsStock(componentCode);
 
     }
+
 }

@@ -25,4 +25,5 @@ public class RobotMaterial implements IRobot {
         return stockRepository.updateRobotPartsStock(componentCode);
 
     }
+
 }

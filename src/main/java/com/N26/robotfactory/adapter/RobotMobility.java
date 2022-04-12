@@ -25,4 +25,5 @@ public class RobotMobility implements IRobot {
         return stockRepository.updateRobotPartsStock(componentCode);
 
     }
+
 }

@@ -3,6 +3,7 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @Builder
 public class StockRepository {
 
-    final static List<ComponentInventory> robotPartStocks = new ArrayList<>();
+    static List<ComponentInventory> robotPartStocks = new ArrayList<>();
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
@@ -72,4 +73,28 @@ public class StockRepository {
     public List<ComponentInventory> getRobotPartStock() {
         return robotPartStocks;
     }
+
+    public Flux<List<ComponentInventory>> rollbackInventory (String componentCode, List<List<String>> pairedComponents,
+                                                       List<ComponentInventory> componentInventory){
+
+        return Flux.fromIterable(pairedComponents)
+                .filter(pairedComponent -> !pairedComponent.get(1).equals(componentCode))
+                .map(pairedComponent1 -> componentInventory.stream()
+                        .filter(componentInventory1 -> componentInventory1.getCode().equals(pairedComponent1.get(1)))
+                        .map(componentInventory2 -> {
+                            componentInventory2.setAvailable(componentInventory2.getAvailable() + 1);
+                            return componentInventory2;
+                        })
+                        .collect(Collectors.toList()))
+                .flatMap(s -> printComponentInventoryRollback(s) );
+    }
+
+    private Mono<List<ComponentInventory>> printComponentInventoryRollback(List<ComponentInventory> s) {
+
+        s.forEach(x -> System.out.println("Rollback Tengo " + x.getAvailable() + " " + x.getCode() + "disponibles"));
+
+        return Mono.just(s);
+    }
+
+
 }

@@ -74,11 +74,13 @@ public class RobotUseCase {
 
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
-                 .filterWhen(component -> isComponentAvailable(componentInventory, component))
+                 .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
                  .map(robotComponent1 -> updateRobotStock(robotComponent1))
                  .flatMap(componentInventory1 ->componentInventory1)
-                // .onErrorReturn(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
-                // .switchIfEmpty(Flux.error( new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
+                 .onErrorResume(err -> {
+                  //   stockRepository.rollbackInventory(componentInventory);
+                     return Flux.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + 2));
+                 })
                  .then(Mono.just(componentInventory));
 
     }
@@ -98,18 +100,23 @@ public class RobotUseCase {
 
     }
 
-    private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, List<String> component) {
+    private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, List<String> component,
+                                               List<List<String>> pairedComponents) {
 
         IRobot robotPart = robotFactory.getRobotParts(component.get(0));
 
          return robotPart.findRobotPart(componentInventory, component.get(1))
-                 .map(componentInventory1 -> {
-                   if(componentInventory1.getAvailable() > 0){
-                        return true;
-                   }else{
-                       throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
-                   }
-                 });
+                 .filter(componentInventory1 -> !(componentInventory1.getAvailable() > 0))
+                 .flatMap(componentInventory2 -> executeInventoryRollback(componentInventory2.getCode(), pairedComponents, componentInventory))
+                 .switchIfEmpty(Mono.just(true));
+    }
+
+    private Mono<Boolean> executeInventoryRollback(String componentCode, List<List<String>> pairedComponents, List<ComponentInventory> componentInventory) {
+
+      return stockRepository.rollbackInventory(componentCode, pairedComponents, componentInventory)
+               // .map(x -> x)
+                .then(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)));
+
     }
 
     private Mono<BigDecimal> calculateFullRobotPrice(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
