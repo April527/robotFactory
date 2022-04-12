@@ -6,7 +6,6 @@ import com.N26.robotfactory.gateway.IRobot;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class RobotMaterial implements IRobot {

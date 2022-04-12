@@ -9,7 +9,6 @@ import com.N26.robotfactory.gateway.IStock;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -24,10 +23,9 @@ public class RobotUseCase {
     private RobotFactory robotFactory;
     private final IStock stockRepository;
 
-    public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
+    public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "At least one component doesn't exist or it's not available";
 
      public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
-// TODO I could try streaming componentsList and apply the operations to each list element
 
          List<List<String>> componentsList = setComponentsList(components);
 
@@ -77,10 +75,7 @@ public class RobotUseCase {
                  .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
                  .map(robotComponent1 -> updateRobotStock(robotComponent1))
                  .flatMap(componentInventory1 ->componentInventory1)
-                 .onErrorResume(err -> {
-                  //   stockRepository.rollbackInventory(componentInventory);
-                     return Flux.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + 2));
-                 })
+                 .onErrorResume(err -> Flux.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
                  .then(Mono.just(componentInventory));
 
     }
@@ -114,7 +109,6 @@ public class RobotUseCase {
     private Mono<Boolean> executeInventoryRollback(String componentCode, List<List<String>> pairedComponents, List<ComponentInventory> componentInventory) {
 
       return stockRepository.rollbackInventory(componentCode, pairedComponents, componentInventory)
-               // .map(x -> x)
                 .then(Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)));
 
     }

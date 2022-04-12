@@ -3,12 +3,10 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +43,7 @@ public class StockRepository {
                    return componentInventoryList.stream()
                             .filter(component -> component.getCode().equals(componentCode))
                             .findAny()
-                            .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT + "1"));
+                            .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT));
                 })
                 .map(componentInventory1 -> componentInventory1);
     }
@@ -58,17 +56,8 @@ public class StockRepository {
                 .map(x -> {
                     x.setAvailable(x.getAvailable() - 1);
                     return x;
-                })
-                .flatMap(componentInventory -> printComponentInventory(componentInventory));
+                });
     }
-
-    private Mono<ComponentInventory> printComponentInventory(ComponentInventory s) {
-
-        System.out.println("Tengo " + s.getAvailable() + " " + s.getCode() + "disponibles");
-
-        return Mono.just(s);
-    }
-
 
     public List<ComponentInventory> getRobotPartStock() {
         return robotPartStocks;
@@ -79,21 +68,17 @@ public class StockRepository {
 
         return Flux.fromIterable(pairedComponents)
                 .filter(pairedComponent -> !pairedComponent.get(1).equals(componentCode))
-                .map(pairedComponent1 -> componentInventory.stream()
-                        .filter(componentInventory1 -> componentInventory1.getCode().equals(pairedComponent1.get(1)))
-                        .map(componentInventory2 -> {
-                            componentInventory2.setAvailable(componentInventory2.getAvailable() + 1);
-                            return componentInventory2;
-                        })
-                        .collect(Collectors.toList()))
-                .flatMap(s -> printComponentInventoryRollback(s) );
+                .map(pairedComponent1 -> setInventoryRollback(componentInventory, pairedComponent1));
     }
 
-    private Mono<List<ComponentInventory>> printComponentInventoryRollback(List<ComponentInventory> s) {
-
-        s.forEach(x -> System.out.println("Rollback Tengo " + x.getAvailable() + " " + x.getCode() + "disponibles"));
-
-        return Mono.just(s);
+    private List<ComponentInventory> setInventoryRollback(List<ComponentInventory> componentInventory, List<String> pairedComponent1) {
+        return componentInventory.stream()
+                .filter(componentInventory1 -> componentInventory1.getCode().equals(pairedComponent1.get(1)))
+                .map(componentInventory2 -> {
+                    componentInventory2.setAvailable(componentInventory2.getAvailable() + 1);
+                    return componentInventory2;
+                })
+                .collect(Collectors.toList());
     }
 
 
