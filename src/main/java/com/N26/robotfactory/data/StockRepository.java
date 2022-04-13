@@ -3,6 +3,7 @@ package com.N26.robotfactory.data;
 import com.N26.robotfactory.domain.model.BusinessException;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import lombok.*;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @Builder
+@Repository
 public class StockRepository {
 
     static List<ComponentInventory> robotPartStocks = new ArrayList<>();

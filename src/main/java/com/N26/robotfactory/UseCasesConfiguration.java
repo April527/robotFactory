@@ -1,5 +1,6 @@
 package com.N26.robotfactory;
 
+import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.usecase.RobotUseCase;
 import com.N26.robotfactory.gateway.IStock;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,11 @@ public class UseCasesConfiguration {
     @Bean
     public RobotUseCase robotUseCase(RobotFactory robotFactory, IStock stockRepository) {
         return new RobotUseCase(robotFactory, stockRepository);
+    }
+
+    @Bean
+    public RobotFactory robotFactory1(StockRepository stockRepository){
+        return new RobotFactory(stockRepository);
     }
 
 }

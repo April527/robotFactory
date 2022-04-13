@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public interface IRobot {
+
     Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String pairedComponents);
     Flux<ComponentInventory> updateStock(String componentCode);
 
