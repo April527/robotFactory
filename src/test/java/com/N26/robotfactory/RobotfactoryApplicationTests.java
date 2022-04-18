@@ -52,7 +52,7 @@ class RobotfactoryApplicationTests {
 				.statusCode(HttpStatus.BAD_REQUEST.value());
 	}
 
-	//TODO: Modify the code so this test works
+	//TODO: Modify the code so it returns a 422
 	@Test
 	public void shouldNotAllowInvalidRobotConfiguration() throws Exception {
 

@@ -27,6 +27,11 @@ public class RobotUseCase {
 
     public static final String THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT = "There must be only one of each component in the order";
 
+    final String MATERIAL = "MATERIAL";
+    final String FACE = "FACE";
+    final String ARM = "HANDS";
+    final String MOBILITY = "MOBILITY";
+
      public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
 
          List<List<String>> componentsList = setComponentsList(components);
@@ -65,11 +70,6 @@ public class RobotUseCase {
     }
 
     private List<List<String>> setComponentsList(List<String> components) {
-//TODO Throw exception when the order is invalid
-        final String MATERIAL = "MATERIAL";
-        final String FACE = "FACE";
-        final String ARM = "HANDS";
-        final String MOBILITY = "MOBILITY";
 
         List<String> componentsName = Arrays.asList(MATERIAL,FACE,ARM, MOBILITY);
 
@@ -107,7 +107,9 @@ public class RobotUseCase {
 //TODO if the component doesn't exist, throw an exception
         return Mono.just(componentInventory)
                 .map(componentInventoryList -> componentInventoryList.stream()
-                        .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component.get(1))));
+                        .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component.get(1))))
+               /* .map(isComponentPresent -> isComponentPresent ? isComponentPresent
+                        : Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))*/;
 
     }
 
@@ -134,7 +136,8 @@ public class RobotUseCase {
          return Flux.fromIterable(pairedComponents)
                  .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
                  .map(componentInventory1 -> componentInventory1.getPrice())
-                 .reduce(new BigDecimal(0), BigDecimal::add);
+                 .reduce(new BigDecimal(0), BigDecimal::add)
+                 .map(totalRobotPrice -> totalRobotPrice.setScale(2, BigDecimal.ROUND_HALF_UP));
 
     }
 

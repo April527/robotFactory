@@ -24,7 +24,7 @@ public class StockRepository {
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "The component doesn't exist or it's not available";
 
     public List<ComponentInventory> setInitialRobotPartStock(){
-//TODO Write a method that rounds the bigDecimal to two decimal numbers
+
         robotPartStocks.add(new ComponentInventory("A", new BigDecimal(10.28), 9, "Humanoid Face"));
         robotPartStocks.add(new ComponentInventory("B", new BigDecimal(24.07), 7, "LCD Face"));
         robotPartStocks.add(new ComponentInventory("C", new BigDecimal(13.30), 0, "Steampunk Face"));
