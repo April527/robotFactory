@@ -25,7 +25,7 @@ public class RobotUseCase {
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "At least one component doesn't exist or it's not available";
 
-    public static final String THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT = "There must be only one of each component in the order";
+    public static final String THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT = "There must be only one of each valid component in the order";
 
     final String MATERIAL = "MATERIAL";
     final String FACE = "FACE";
@@ -87,7 +87,6 @@ public class RobotUseCase {
     private Mono<List<ComponentInventory>> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
          return Flux.fromIterable(pairedComponents)
-                 .filterWhen(robotComponent -> componentExists(componentInventory, robotComponent))
                  .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
                  .map(robotComponent1 -> updateRobotStock(robotComponent1))
                  .flatMap(componentInventory1 ->componentInventory1)
@@ -103,14 +102,14 @@ public class RobotUseCase {
         return robotPart.updateStock(robotComponent.get(1));
     }
 
-    private Mono<Boolean> componentExists(List<ComponentInventory> componentInventory, List<String> component) {
-//TODO if the component doesn't exist, throw an exception
-        return Mono.just(componentInventory)
-                .map(componentInventoryList -> componentInventoryList.stream()
-                        .anyMatch(componentInventory1 -> componentInventory1.getCode().equals(component.get(1))))
-               /* .map(isComponentPresent -> isComponentPresent ? isComponentPresent
-                        : Mono.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))*/;
 
+    private Boolean isComponentPresent(Boolean isCompPresent) {
+
+         if (isCompPresent){
+             return isCompPresent;
+         }else{
+             throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
+         }
     }
 
     private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, List<String> component,
