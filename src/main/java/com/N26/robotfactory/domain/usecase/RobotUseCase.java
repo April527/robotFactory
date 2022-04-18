@@ -25,16 +25,32 @@ public class RobotUseCase {
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "At least one component doesn't exist or it's not available";
 
+    public static final String THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT = "There must be only one of each component in the order";
+
      public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
 
          List<List<String>> componentsList = setComponentsList(components);
 
          return Mono.just(stockRepository.getStock())
                  .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
+                 .filter(componentInventory1 -> validateRobotOrder(componentInventory1, componentsList))
                  .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
                  .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
-                 .map(total -> buildRobotResponse(total));
+                 .map(total -> buildRobotResponse(total))
+                 .switchIfEmpty(Mono.error(new BusinessException(THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT)));
 
+    }
+
+    private boolean validateRobotOrder(List<ComponentInventory> componentInventory1, List<List<String>> componentsList) {
+
+        List<List<String>> robotOrderList = componentsList.stream()
+                 .filter(component ->
+                         componentInventory1.stream()
+                                 .anyMatch(compInventory1 -> compInventory1.getCode().equals(component.get(1)) &&
+                                         compInventory1.getPart().toLowerCase().contains(component.get(0).toLowerCase())))
+                .collect(Collectors.toList());
+
+        return robotOrderList.equals(componentsList);
     }
 
     private String generateOrder_Id(){
