@@ -4,6 +4,7 @@ import com.N26.robotfactory.domain.model.Component;
 import com.N26.robotfactory.domain.model.ResponseRobotFactory;
 import com.N26.robotfactory.domain.usecase.RobotUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -14,7 +15,7 @@ public class RobotFactoryController {
     RobotUseCase robotUseCase;
 
     @PostMapping("/orders")
-    public Mono<ResponseRobotFactory> robotOrders(@RequestBody Component components) {
+    public Mono<ResponseEntity> robotOrders(@RequestBody Component components) {
 
         return robotUseCase.placeRobotOrder(components.getComponents());
 

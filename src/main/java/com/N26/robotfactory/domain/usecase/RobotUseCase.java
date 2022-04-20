@@ -7,10 +7,13 @@ import com.N26.robotfactory.domain.model.ResponseRobotFactory;
 import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +35,7 @@ public class RobotUseCase {
     final String ARM = "HANDS";
     final String MOBILITY = "MOBILITY";
 
-     public Mono<ResponseRobotFactory> placeRobotOrder(List<String> components) {
+     public Mono<ResponseEntity> placeRobotOrder(List<String> components) {
 
          List<List<String>> componentsList = setComponentsList(components);
 
@@ -41,9 +44,14 @@ public class RobotUseCase {
                  .filter(componentInventory1 -> validateRobotOrder(componentInventory1, componentsList))
                  .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
                  .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
-                 .map(total -> buildRobotResponse(total))
-                 .switchIfEmpty(Mono.error(new BusinessException(THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT)));
+                 .map(this::buildRobotResponse)
+                 .switchIfEmpty(buildUnprocessableEntityResponse());
 
+    }
+
+    private Mono<ResponseEntity<BusinessException>> buildUnprocessableEntityResponse() {
+        return Mono.just(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new BusinessException(THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT)));
     }
 
     private boolean validateRobotOrder(List<ComponentInventory> componentInventory1, List<List<String>> componentsList) {
@@ -62,25 +70,24 @@ public class RobotUseCase {
         return UUID.randomUUID().toString();
     }
 
-    private ResponseRobotFactory buildRobotResponse(BigDecimal total) {
-        return ResponseRobotFactory.builder()
+    private ResponseEntity buildRobotResponse(BigDecimal total) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseRobotFactory.builder()
                 .order_id(generateOrder_Id())
                 .total(total)
-                .build();
+                .build());
     }
 
     private List<List<String>> setComponentsList(List<String> components) {
 
         List<String> componentsName = Arrays.asList(MATERIAL,FACE,ARM, MOBILITY);
 
-        List<List<String>> componentsTest = IntStream.range(0, componentsName.size())
+        return IntStream.range(0, componentsName.size())
                 .boxed()
                 .flatMap(i -> {
                     return Arrays.asList(Arrays.asList(componentsName.get(i), components.get(i))).stream();
                 })
                 .collect(Collectors.toList());
-
-        return componentsTest;
 
     }
 
@@ -88,7 +95,7 @@ public class RobotUseCase {
 
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
-                 .map(robotComponent1 -> updateRobotStock(robotComponent1))
+                 .map(this::updateRobotStock)
                  .flatMap(componentInventory1 ->componentInventory1)
                  .onErrorResume(err -> Flux.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
                  .then(Mono.just(componentInventory));
@@ -102,15 +109,6 @@ public class RobotUseCase {
         return robotPart.updateStock(robotComponent.get(1));
     }
 
-
-    private Boolean isComponentPresent(Boolean isCompPresent) {
-
-         if (isCompPresent){
-             return isCompPresent;
-         }else{
-             throw new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT);
-         }
-    }
 
     private Mono<Boolean> isComponentAvailable(List<ComponentInventory> componentInventory, List<String> component,
                                                List<List<String>> pairedComponents) {
@@ -134,9 +132,9 @@ public class RobotUseCase {
 
          return Flux.fromIterable(pairedComponents)
                  .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
-                 .map(componentInventory1 -> componentInventory1.getPrice())
+                 .map(ComponentInventory::getPrice)
                  .reduce(new BigDecimal(0), BigDecimal::add)
-                 .map(totalRobotPrice -> totalRobotPrice.setScale(2, BigDecimal.ROUND_HALF_UP));
+                 .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP));
 
     }
 
