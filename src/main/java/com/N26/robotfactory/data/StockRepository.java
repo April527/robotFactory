@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,16 +26,16 @@ public class StockRepository {
 
     public List<ComponentInventory> setInitialRobotPartStock(){
 
-        robotPartStocks.add(new ComponentInventory("A", new BigDecimal(10.28), 9, "Humanoid Face"));
-        robotPartStocks.add(new ComponentInventory("B", new BigDecimal(24.07), 7, "LCD Face"));
-        robotPartStocks.add(new ComponentInventory("C", new BigDecimal(13.30), 0, "Steampunk Face"));
-        robotPartStocks.add(new ComponentInventory("D", new BigDecimal(28.94), 1, "Arms with Hands"));
-        robotPartStocks.add(new ComponentInventory("E", new BigDecimal(12.39), 3, "Arms with Grippers"));
-        robotPartStocks.add(new ComponentInventory("F", new BigDecimal(30.77), 2, "Mobility with Wheels"));
-        robotPartStocks.add(new ComponentInventory("G", new BigDecimal(55.13), 15, "Mobility with Legs"));
-        robotPartStocks.add(new ComponentInventory("H", new BigDecimal(50.00), 7, "Mobility with Tracks"));
-        robotPartStocks.add(new ComponentInventory("I", new BigDecimal(90.12), 92, "Material Bioplastic"));
-        robotPartStocks.add(new ComponentInventory("J", new BigDecimal(82.31), 15, "Material Metallic"));
+        robotPartStocks.add(new ComponentInventory("A", new BigDecimal(10.28).setScale(2, RoundingMode.HALF_UP), 9, "Humanoid Face"));
+        robotPartStocks.add(new ComponentInventory("B", new BigDecimal(24.07).setScale(2, RoundingMode.HALF_UP), 7, "LCD Face"));
+        robotPartStocks.add(new ComponentInventory("C", new BigDecimal(13.30).setScale(2, RoundingMode.HALF_UP), 0, "Steampunk Face"));
+        robotPartStocks.add(new ComponentInventory("D", new BigDecimal(28.94).setScale(2, RoundingMode.HALF_UP), 1, "Arms with Hands"));
+        robotPartStocks.add(new ComponentInventory("E", new BigDecimal(12.39).setScale(2, RoundingMode.HALF_UP), 3, "Arms with Grippers"));
+        robotPartStocks.add(new ComponentInventory("F", new BigDecimal(30.77).setScale(2, RoundingMode.HALF_UP), 2, "Mobility with Wheels"));
+        robotPartStocks.add(new ComponentInventory("G", new BigDecimal(55.13).setScale(2, RoundingMode.HALF_UP), 15, "Mobility with Legs"));
+        robotPartStocks.add(new ComponentInventory("H", new BigDecimal(50.00).setScale(2, RoundingMode.HALF_UP), 7, "Mobility with Tracks"));
+        robotPartStocks.add(new ComponentInventory("I", new BigDecimal(90.12).setScale(2, RoundingMode.HALF_UP), 92, "Material Bioplastic"));
+        robotPartStocks.add(new ComponentInventory("J", new BigDecimal(82.31).setScale(2, RoundingMode.HALF_UP), 15, "Material Metallic"));
         return robotPartStocks;
     }
 

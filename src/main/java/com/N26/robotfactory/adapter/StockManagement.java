@@ -3,6 +3,7 @@ package com.N26.robotfactory.adapter;
 import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.gateway.IStock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -11,7 +12,8 @@ import java.util.List;
 @Service
 public class StockManagement implements IStock {
 
-    StockRepository stockRepository = new StockRepository();
+    @Autowired
+    StockRepository stockRepository;
 
     @Override
     public List<ComponentInventory> setStock() {
