@@ -1,9 +1,5 @@
 package com.N26.robotfactory;
 
-import com.N26.robotfactory.adapter.RobotArm;
-import com.N26.robotfactory.adapter.RobotFace;
-import com.N26.robotfactory.adapter.RobotMaterial;
-import com.N26.robotfactory.adapter.RobotMobility;
 import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.usecase.RobotUseCase;
@@ -39,9 +35,6 @@ public class RobotUseCaseTest {
     IStock mockIStock;
 
     @Mock
-    private StockRepository mockStockRepository;
-
-    @Mock
     IRobot mockIRobot;
 
     final String MATERIAL = "MATERIAL";
@@ -58,24 +51,22 @@ public class RobotUseCaseTest {
     @Test
     public void testDecreasesStockAccordingly() {
 
-        ComponentInventory componentInventory = ComponentInventory.builder()
-                .code("A")
-                .part("FACE")
-                .available(2)
-                .price(new BigDecimal(10.28).setScale(2, RoundingMode.HALF_UP))
+        ComponentInventory componentInventoryMaterial = ComponentInventory.builder()
+                .code("I")
+                .part(MATERIAL)
+                .available(92)
+                .price(new BigDecimal(90.12).setScale(2, RoundingMode.HALF_UP))
                 .build();
 
-        Mockito.when(mockRobotFactory.getRobotParts(FACE)).thenReturn(new RobotFace(mockStockRepository));
-        Mockito.when(mockRobotFactory.getRobotParts(MATERIAL)).thenReturn(new RobotMaterial(mockStockRepository));
-        Mockito.when(mockRobotFactory.getRobotParts(ARM)).thenReturn(new RobotArm(mockStockRepository));
-        Mockito.when(mockRobotFactory.getRobotParts(MOBILITY)).thenReturn(new RobotMobility(mockStockRepository));
+        Mockito.when(mockRobotFactory.getRobotParts(ArgumentMatchers.anyString())).thenReturn(mockIRobot);
 
-        Mockito.when(mockStockRepository.updateRobotPartsStock(ArgumentMatchers.anyString())).thenReturn(Flux.fromIterable(setUpdatedRobotPartStock()));
-        Mockito.when(mockIRobot.findRobotPart(ArgumentMatchers.anyList(), ArgumentMatchers.anyString())).thenReturn(Mono.just(componentInventory)); //TODO Mock this method well
+        Mockito.when(mockIRobot.findRobotPart(ArgumentMatchers.anyList(), ArgumentMatchers.anyString())).thenReturn(Mono.just(componentInventoryMaterial));
+
+        Mockito.when(mockIRobot.updateStock(ArgumentMatchers.anyString())).thenReturn(Flux.fromIterable(setUpdatedRobotPartStock()));
 
         Mono<List<ComponentInventory>> result = robotUseCaseTest.updateStock(setRobotPartStock(), buildComponentList());
 
-        assertThat(result.block()).equals(setUpdatedRobotPartStock());
+        assertThat(result.block()).isEqualTo(setUpdatedRobotPartStock());
 
     }
 

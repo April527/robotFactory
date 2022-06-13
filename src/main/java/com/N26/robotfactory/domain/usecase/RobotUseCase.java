@@ -96,7 +96,7 @@ public class RobotUseCase {
          return Flux.fromIterable(pairedComponents)
                  .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
                  .map(this::updateRobotStock)
-                 .flatMap(componentInventory1 ->componentInventory1)
+                 .flatMap(componentInventory1 ->componentInventory1) //TODO Return this flux into a list so the unit test passes, and verify I didn't break the reactivity
                  .onErrorResume(err -> Flux.error(new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT)))
                  .then(Mono.just(componentInventory));
 
