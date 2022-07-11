@@ -17,16 +17,16 @@ public class RobotMobility implements IRobot {
     StockRepository stockRepository;
 
     @Override
-    public Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String componentCode) {
-
-        return stockRepository.findRobotPartStockByCode(componentInventory, componentCode);
-    }
-
-    @Override
     public Flux<ComponentInventory> updateStock(String componentCode) {
 
         return stockRepository.updateRobotPartsStock(componentCode);
 
+    }
+
+
+    @Override
+    public Mono<ComponentInventory> findRobotPart(List<ComponentInventory>  componentInventory, String pairedComponents) {
+        return stockRepository.findRobotPartStockByCode(componentInventory, pairedComponents);
     }
 
 }

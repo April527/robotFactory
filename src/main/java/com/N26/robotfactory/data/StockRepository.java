@@ -39,11 +39,12 @@ public class StockRepository {
         return robotPartStocks;
     }
 
+
     public Mono<ComponentInventory> findRobotPartStockByCode(List<ComponentInventory> componentInventory, String componentCode){
 
-       return Mono.just(componentInventory)
+        return Mono.just(componentInventory)
                 .map(componentInventoryList -> {
-                   return componentInventoryList.stream()
+                    return componentInventoryList.stream()
                             .filter(component -> component.getCode().equals(componentCode))
                             .findAny()
                             .orElseThrow(() -> new BusinessException(NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT));
@@ -67,7 +68,7 @@ public class StockRepository {
     }
 
     public Flux<List<ComponentInventory>> rollbackInventory (String componentCode, List<List<String>> pairedComponents,
-                                                       List<ComponentInventory> componentInventory){
+                                                             List<ComponentInventory> componentInventory){
 
         return Flux.fromIterable(pairedComponents)
                 .filter(pairedComponent -> !pairedComponent.get(1).equals(componentCode))

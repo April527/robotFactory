@@ -10,15 +10,16 @@ import java.util.List;
 public class EmptyRobot implements IRobot {
 
 
-    @Override
-    public Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String componentCode) {
-
-        return null;
-    }
 
     @Override
     public Flux<ComponentInventory> updateStock(String componentCode) {
         return Flux.empty();
     }
+
+    @Override
+    public Mono<ComponentInventory> findRobotPart(List<ComponentInventory> componentInventory, String pairedComponents) {
+        return null;
+    }
+
 
 }
