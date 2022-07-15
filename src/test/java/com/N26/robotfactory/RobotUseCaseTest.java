@@ -7,9 +7,12 @@ import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +27,7 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+//@RunWith(MockitoJUnitRunner.class)
 public class RobotUseCaseTest {
 
     private RobotUseCase robotUseCaseTest;
@@ -45,6 +49,7 @@ public class RobotUseCaseTest {
     @Before
     public void setUp(){
         initMocks(this);
+       // MockitoAnnotations.openMocks(this);
         robotUseCaseTest = new RobotUseCase(mockRobotFactory, mockIStock);
     }
 
@@ -64,9 +69,9 @@ public class RobotUseCaseTest {
 
         Mockito.when(mockIRobot.updateStock(ArgumentMatchers.anyString())).thenReturn(Flux.fromIterable(setUpdatedRobotPartStock()));
 
-        Mono<List<ComponentInventory>> result = robotUseCaseTest.updateStock(setRobotPartStock(), buildComponentList());
+        Flux<ComponentInventory> result = robotUseCaseTest.updateStock(setRobotPartStock(), buildComponentList());
 
-        assertThat(result.block()).isEqualTo(setUpdatedRobotPartStock());
+        assertThat(result.collectList().block()).isEqualTo(setUpdatedRobotPartStock());
 
     }
 
