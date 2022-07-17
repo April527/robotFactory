@@ -153,14 +153,6 @@ public class RobotUseCase {
         return Flux.fromIterable(pairedComponents)
                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
                 .map(ComponentInventory::getPrice);
-           /*     .reduce(new BigDecimal(0), BigDecimal::add)
-                .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP));*/
-
-     /*    return Flux.fromIterable(pairedComponents)
-                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
-                 .map(ComponentInventory::getPrice)
-                 .reduce(new BigDecimal(0), BigDecimal::add)
-                 .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP));  */
 
     }
 
@@ -170,17 +162,6 @@ public class RobotUseCase {
                 Mono.just(ComponentInventory.builder()
                         .price(new BigDecimal(0))
                         .build());
-
-
-        /*  return componentInventory
-                 .filter(componentInventory1 -> componentInventory1.getCode().equals(componentName.get(1))); */
-
-
-
-//TODO Flux de componentInventory y filter con componentName, para que me devuelva los 4 componentes que necesito
-        /* return Mono.just(robotFactory.getRobotParts(componentName.get(0)))
-                 .flatMap(robotComponent -> Mono.just(robotComponent.findRobotPart(componentInventory, componentName.get(1))))
-                 .flatMap(componentInventory1 -> componentInventory1);*/
 
     }
 

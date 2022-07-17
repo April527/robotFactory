@@ -59,7 +59,7 @@ class RobotfactoryApplicationTests {
 				"  \"components\": [\"A\",\"C\",\"I\",\"D\"]" + " }")
 				.then()
 				.assertThat()
-				.statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+				.statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value()); //TODO Make adjustments so this test can pass
 	}
 
 

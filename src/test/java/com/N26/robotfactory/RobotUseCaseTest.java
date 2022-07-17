@@ -20,14 +20,16 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-//@RunWith(MockitoJUnitRunner.class)
+
 public class RobotUseCaseTest {
 
     private RobotUseCase robotUseCaseTest;
@@ -63,6 +65,11 @@ public class RobotUseCaseTest {
                 .price(new BigDecimal(90.12).setScale(2, RoundingMode.HALF_UP))
                 .build();
 
+        List<ComponentInventory> expectedResult = Stream.of(setUpdatedRobotPartStock(), setUpdatedRobotPartStock(),
+                setUpdatedRobotPartStock(), setUpdatedRobotPartStock())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
         Mockito.when(mockRobotFactory.getRobotParts(ArgumentMatchers.anyString())).thenReturn(mockIRobot);
 
         Mockito.when(mockIRobot.findRobotPart(ArgumentMatchers.anyList(), ArgumentMatchers.anyString())).thenReturn(Mono.just(componentInventoryMaterial));
@@ -71,7 +78,9 @@ public class RobotUseCaseTest {
 
         Flux<ComponentInventory> result = robotUseCaseTest.updateStock(setRobotPartStock(), buildComponentList());
 
-        assertThat(result.collectList().block()).isEqualTo(setUpdatedRobotPartStock());
+        assertThat(result.collectList().block()).isEqualTo(expectedResult);
+
+
 
     }
 
