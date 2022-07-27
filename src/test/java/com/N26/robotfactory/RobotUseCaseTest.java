@@ -1,18 +1,14 @@
 package com.N26.robotfactory;
 
-import com.N26.robotfactory.data.StockRepository;
 import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.domain.usecase.RobotUseCase;
 import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -51,12 +47,11 @@ public class RobotUseCaseTest {
     @Before
     public void setUp(){
         initMocks(this);
-       // MockitoAnnotations.openMocks(this);
         robotUseCaseTest = new RobotUseCase(mockRobotFactory, mockIStock);
     }
 
     @Test
-    public void testDecreasesStockAccordingly() {
+    public void decreasesStockAccordingly() {
 
         ComponentInventory componentInventoryMaterial = ComponentInventory.builder()
                 .code("I")

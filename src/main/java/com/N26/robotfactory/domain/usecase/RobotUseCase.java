@@ -28,34 +28,40 @@ public class RobotUseCase {
 
     public static final String NON_AVAILABLE_OR_NON_EXISTENT_COMPONENT = "At least one component doesn't exist or it's not available";
 
-    public static final String THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT = "There must be only one of each valid component in the order";
+    public static final String INVALID_ORDER = "There must be only one of each valid component in the order, and in the correct sequence";
 
     final String MATERIAL = "MATERIAL";
     final String FACE = "FACE";
     final String ARM = "HANDS";
     final String MOBILITY = "MOBILITY";
 
-     public Mono<ResponseEntity> placeRobotOrder(List<String> components) {
+     public Mono<ResponseEntity> robotOrder(List<String> components) {
 
          List<List<String>> componentsList = setComponentsList(components);
 
-         return Flux.just(stockRepository.getStock())
-                 .map(stock -> stock.isEmpty()? stockRepository.setStock(): stockRepository.getStock())
-                 .filter(componentInventory1 -> validateRobotOrder(componentInventory1, componentsList))
-                 .flatMap(componentInventory -> updateStock(componentInventory, componentsList))
-                 .flatMap(componentInventoryList -> calculateFullRobotPrice(componentInventoryList, componentsList))
-                 .reduce(new BigDecimal(0), BigDecimal::add)
-                 .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP))
-                 .map(this::buildRobotResponse)
-                 .switchIfEmpty(buildUnprocessableEntityResponse());
+         return validateRobotOrder(getCurrentStock(), componentsList) ? placeRobotOrder(getCurrentStock(), componentsList)
+                 : buildInvalidOrderResponse();
 
     }
 
+    private Mono<ResponseEntity> placeRobotOrder(List<ComponentInventory> componentInventory, List<List<String>> componentsList) {
+
+        return updateStock(componentInventory, componentsList)
+                .flatMap(componentInventoryList -> findRobotItemsPrice(componentInventoryList, componentsList))
+                .reduce(new BigDecimal(0), BigDecimal::add)
+                .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP))
+                .map(this::buildRobotResponse);
+    }
+
+    private List<ComponentInventory> getCurrentStock() {
+
+      return  stockRepository.getStock().isEmpty()? stockRepository.setStock(): stockRepository.getStock() ;
+    }
 
 
-    private Mono<ResponseEntity<BusinessException>> buildUnprocessableEntityResponse() {
+    private Mono<ResponseEntity> buildInvalidOrderResponse() {
         return Mono.just(ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new BusinessException(THERE_MUST_BE_ONLY_ONE_OF_EACH_COMPONENT)));
+                .body(new BusinessException(INVALID_ORDER)));
     }
 
     private boolean validateRobotOrder(List<ComponentInventory> componentInventory1, List<List<String>> componentsList) {
@@ -68,23 +74,6 @@ public class RobotUseCase {
                 .collect(Collectors.toList());
 
         return robotOrderList.equals(componentsList);
-    }
-
-   /* private Mono<Boolean> validateRobotOrder(Mono<List<ComponentInventory>> componentInventory1, List<List<String>> componentsList) {
-
-        return componentInventory1
-                 .map(componentInventoryList -> getOrderComponents(componentsList, componentInventoryList))
-                 .map(robotOrderList -> robotOrderList.equals(componentsList));
-
-    } */
-
-    private List<List<String>> getOrderComponents(List<List<String>> componentsList, List<ComponentInventory> componentInventoryList) {
-        return componentsList.stream()
-                .filter(component ->
-                        componentInventoryList.stream()
-                                .anyMatch(compInventory1 -> compInventory1.getCode().equals(component.get(1)) &&
-                                        compInventory1.getPart().toLowerCase().contains(component.get(0).toLowerCase())))
-                .collect(Collectors.toList());
     }
 
     private String generateOrder_Id(){
@@ -148,11 +137,13 @@ public class RobotUseCase {
 
     }
 
-    private Flux<BigDecimal> calculateFullRobotPrice(ComponentInventory componentInventory, List<List<String>> pairedComponents) {
+    private Mono<BigDecimal> findRobotItemsPrice(ComponentInventory componentInventory, List<List<String>> pairedComponents) {
 
         return Flux.fromIterable(pairedComponents)
                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
-                .map(ComponentInventory::getPrice);
+                .map(ComponentInventory::getPrice)
+                .reduce(new BigDecimal(0), BigDecimal::add)
+                .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP));
 
     }
 
