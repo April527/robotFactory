@@ -16,6 +16,7 @@ public class RobotFactoryController {
     @PostMapping("/orders")
     public Mono<ResponseEntity> robotOrders(@RequestBody Component components) {
 
+
         return robotUseCase.robotOrder(components.getComponents());
 
 
