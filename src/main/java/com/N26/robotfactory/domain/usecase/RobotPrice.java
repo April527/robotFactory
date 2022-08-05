@@ -5,18 +5,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 public class RobotPrice {
 
-    static Mono<BigDecimal> findRobotItemsPrice(ComponentInventory componentInventory, List<List<String>> pairedComponents) {
+    static Flux<BigDecimal> findRobotItemsPrice(ComponentInventory componentInventory, List<List<String>> pairedComponents) {
 
         return Flux.fromIterable(pairedComponents)
                 .flatMap(pairedComponentList -> findRobotPart(componentInventory,pairedComponentList))
-                .map(ComponentInventory::getPrice)
-                .reduce(new BigDecimal(0), BigDecimal::add)
-                .map(totalRobotPrice -> totalRobotPrice.setScale(2, RoundingMode.HALF_UP));
+                .map(ComponentInventory::getPrice);
 
     }
 

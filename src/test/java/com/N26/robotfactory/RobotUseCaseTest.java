@@ -1,7 +1,7 @@
 package com.N26.robotfactory;
 
 import com.N26.robotfactory.domain.model.ComponentInventory;
-import com.N26.robotfactory.domain.usecase.RobotUseCase;
+import com.N26.robotfactory.domain.usecase.Stock;
 import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import org.junit.Before;
@@ -28,7 +28,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RobotUseCaseTest {
 
-    private RobotUseCase robotUseCaseTest;
+    private Stock stockTest;
 
     @Mock
     RobotFactory mockRobotFactory;
@@ -47,7 +47,7 @@ public class RobotUseCaseTest {
     @Before
     public void setUp(){
         initMocks(this);
-        robotUseCaseTest = new RobotUseCase(mockRobotFactory, mockIStock);
+        stockTest = new Stock(mockRobotFactory, mockIStock);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class RobotUseCaseTest {
 
         Mockito.when(mockIRobot.updateStock(ArgumentMatchers.anyString())).thenReturn(Flux.fromIterable(setUpdatedRobotPartStock()));
 
-        Flux<ComponentInventory> result = robotUseCaseTest.updateStock(setRobotPartStock(), buildComponentList());
+        Flux<ComponentInventory> result = stockTest.updateStock(setRobotPartStock(), buildComponentList());
 
         assertThat(result.collectList().block()).isEqualTo(expectedResult);
 

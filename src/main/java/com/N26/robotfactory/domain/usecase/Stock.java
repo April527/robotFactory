@@ -6,7 +6,6 @@ import com.N26.robotfactory.domain.model.ComponentInventory;
 import com.N26.robotfactory.gateway.IRobot;
 import com.N26.robotfactory.gateway.IStock;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,7 +21,7 @@ public class Stock {
     private final IStock stockRepository;
 
 
-      Flux<ComponentInventory> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
+      public Flux<ComponentInventory> updateStock(List<ComponentInventory> componentInventory, List<List<String>> pairedComponents) {
 
         return Flux.fromIterable(pairedComponents)
                 .filterWhen(component -> isComponentAvailable(componentInventory, component, pairedComponents))
