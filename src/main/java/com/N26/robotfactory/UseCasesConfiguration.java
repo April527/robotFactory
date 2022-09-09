@@ -1,6 +1,7 @@
 package com.N26.robotfactory;
 
 import com.N26.robotfactory.data.StockRepository;
+import com.N26.robotfactory.domain.usecase.AlgorithmsUseCase;
 import com.N26.robotfactory.domain.usecase.RobotUseCase;
 import com.N26.robotfactory.domain.usecase.Stock;
 import com.N26.robotfactory.gateway.IStock;
@@ -23,6 +24,11 @@ public class UseCasesConfiguration {
     @Bean
     public Stock stock(RobotFactory robotFactory, IStock stock) {
         return new Stock(robotFactory, stock);
+    }
+
+    @Bean
+    public AlgorithmsUseCase algorithmsUseCase() {
+        return new AlgorithmsUseCase();
     }
 
 }
