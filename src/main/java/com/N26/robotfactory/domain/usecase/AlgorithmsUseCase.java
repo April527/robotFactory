@@ -32,6 +32,8 @@ public class AlgorithmsUseCase {
 
     public List<Boolean> areArithmeticSubarrays(int[] nums, int[] l, int[] r) {
 
+        List<Boolean> arithmeticSequenceList = new ArrayList<>();
+
         for (int i = 0 ; i < l.length ; i++){
 
             if(l[i] < nums.length && r[i] < nums.length && l[i] < r[i]) {
@@ -39,16 +41,28 @@ public class AlgorithmsUseCase {
                 int[] subArrayStream = Arrays.stream(nums, l[i], r[i] + 1)
                         .toArray();
 
-                Arrays.sort(subArrayStream);
-
-                //TODO: Go over the sorted array, see if there's an arithmetic sequence and fill the boolean list depending on the case
-                // It can be done with an Arrays.stream().sorted().map(i -> nums(i) - nums(i+1)... or find out how to do it
-
-                String ale = "";
+                arithmeticSequenceList.add(isArithmeticSequence(subArrayStream));
             }
         }
 
-        return new ArrayList<>();
+        return arithmeticSequenceList;
 
+    }
+
+    public Boolean isArithmeticSequence(int[] orderedSubarray) {
+
+        Arrays.sort(orderedSubarray);
+
+        int difference = orderedSubarray[1] - orderedSubarray[0];
+        boolean isSequenceSymetrical = false;
+
+        for(int i = 0 ; i < orderedSubarray.length ; i++){
+
+            if (i+1 < orderedSubarray.length) {
+                isSequenceSymetrical = orderedSubarray[i + 1] - orderedSubarray[i] == difference;
+            }
+        }
+
+        return isSequenceSymetrical;
     }
 }
