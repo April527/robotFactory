@@ -130,4 +130,91 @@ public class AlgorithmsUseCase {
         populateRes(root.getLeft(), res, row+1, totalRows, i, (i+j)/2 - 1);
         populateRes(root.getRight(), res, row+1, totalRows, (i+j)/2+1, j);
     }
+
+    public boolean search2DMatrix(int[][] matrix, int target) {
+
+        if (matrix.length == 0) return false;
+
+        int rows = matrix.length;
+        int columns = matrix[0].length;
+
+        int left = 0;
+        int right = (rows * columns) - 1;
+
+        while (left <= right){
+
+            int midpoint = left + (right - left) / 2;
+            int midpoint_element = matrix[midpoint/columns][midpoint%columns];
+
+            if(midpoint_element == target) {
+                return true;
+            } else if (target < midpoint_element) {
+                right = midpoint - 1;
+            } else if (target > midpoint_element) {
+                left = midpoint + 1;
+            }
+        }
+
+    return false;
+
+    }
+
+    public int[][] initializeMatrix(int rows, int columns) {
+
+        int[][] matrix = { { 0, 6, 0},
+                { 5, 8, 7 },
+                {0, 9, 1} };
+
+
+        return matrix;
+    }
+
+    public int getPathMaximumGold(int[][] grid) {
+
+        int maxSum = 0;
+        int row = grid.length;
+        int col = grid[0].length;
+
+        for (int i=0; i < row; i++){
+            for (int j=0; j < col; j++){
+                if (grid[i][j] > 0){
+
+                    int sum = dfs(grid, i, j, row, col);
+                    maxSum = Math.max(sum, maxSum);
+                }
+            }
+
+        }
+
+        return maxSum;
+    }
+
+    private int dfs(int[][] grid, int i, int j, int row, int col) {
+
+        if (i < 0 || j >= row || j >= col || isValueZero(grid, i, j, row)) {
+            return 0;
+        }
+
+        int temp = grid[i][j];
+        grid[i][j] = 0;
+
+        int upSum = dfs(grid, i-1, j, row, col);
+        int downSum = dfs(grid, i+1, j, row, col);
+        int leftSum = dfs(grid, i, j-1, row, col);
+        int rightSum = dfs(grid, i, j+1, row, col);
+
+        grid[i][j] = temp;
+
+        return temp + Math.max(Math.max(Math.max(upSum, downSum), leftSum), rightSum);
+    }
+
+    private boolean isValueZero(int[][] grid, int i, int j, int row) {
+
+        if (i < row && j >= 0){
+            return grid [i][j] == 0;
+        }
+
+        return true;
+    }
+
 }

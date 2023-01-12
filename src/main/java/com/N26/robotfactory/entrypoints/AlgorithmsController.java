@@ -1,6 +1,5 @@
 package com.N26.robotfactory.entrypoints;
 
-import com.N26.robotfactory.domain.model.BinaryTree;
 import com.N26.robotfactory.domain.usecase.AlgorithmsUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +35,20 @@ public class AlgorithmsController {
     public List<List<String>> printBinaryTree () {
 
         return algorithmsUseCase.printBinaryTree(algorithmsUseCase.createBinaryTree());
+
+    }
+
+    @GetMapping("/search2DMatrix")
+    public boolean  search2DMatrix () {
+
+        return algorithmsUseCase.search2DMatrix(algorithmsUseCase.initializeMatrix(3,3), 3);
+
+    }
+
+    @GetMapping("/getPathMaximumGold")
+    public int  getPathMaximumGold () {
+
+        return algorithmsUseCase.getPathMaximumGold(algorithmsUseCase.initializeMatrix(3,3));
 
     }
 
