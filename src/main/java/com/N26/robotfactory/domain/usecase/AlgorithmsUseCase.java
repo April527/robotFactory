@@ -71,9 +71,12 @@ public class AlgorithmsUseCase {
         BinaryTree bt = new BinaryTree();
 
         bt.add(1);
-        bt.add(2);
-        bt.add(3);
-        bt.add(4);
+        bt.add(7);
+        bt.add(0);
+        bt.add(7);
+        bt.add(-8);
+        bt.add(null);
+        bt.add(null);
 
         return bt.getRoot();
     }
@@ -236,5 +239,41 @@ public class AlgorithmsUseCase {
 
         return res;
 
+    }
+
+    public int maxLevelSum(Node root) {
+
+        Queue<Node> c = new LinkedList<>();
+
+        c.add(root);
+
+        int level = 0;
+        int maxLevel = 0;
+        int maxLevelSum = Integer.MIN_VALUE;
+
+        while (c.size() > 0) {
+            level++;
+            int sum = 0;
+            int currLevelSize = c.size();
+            for (int i = 0; i < currLevelSize; i++){
+                Node curr = c.poll();
+                sum += curr.getValue();
+
+                if(curr.getLeft() != null) {
+                    c.add(curr.getLeft());
+                }
+
+                if(curr.getRight() != null) {
+                    c.add(curr.getRight());
+                }
+            }
+
+            if (sum > maxLevelSum) {
+                maxLevel = level;
+                maxLevelSum = sum;
+            }
+        }
+
+        return maxLevel;
     }
 }

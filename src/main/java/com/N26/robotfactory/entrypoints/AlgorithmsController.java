@@ -1,10 +1,12 @@
 package com.N26.robotfactory.entrypoints;
 
+import com.N26.robotfactory.domain.model.Node;
 import com.N26.robotfactory.domain.usecase.AlgorithmsUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -33,6 +35,7 @@ public class AlgorithmsController {
 
     @GetMapping("/printBinaryTree")
     public List<List<String>> printBinaryTree () {
+        List<Integer> nodos = Arrays.asList(1,2,3,4);
 
         return algorithmsUseCase.printBinaryTree(algorithmsUseCase.createBinaryTree());
 
@@ -58,6 +61,15 @@ public class AlgorithmsController {
         int[] temperatures =  new int[]{73,74,75,71,69,72,76,73};
 
         return algorithmsUseCase.dailyTemperatures(temperatures);
+
+    }
+
+    @GetMapping("/maxLevelSum")
+    public int  maxLevelSum () {
+
+        Node binaryTree = algorithmsUseCase.createBinaryTree();
+
+        return algorithmsUseCase.maxLevelSum(binaryTree);
 
     }
 

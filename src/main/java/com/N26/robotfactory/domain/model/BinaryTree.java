@@ -11,8 +11,10 @@ public class BinaryTree implements Serializable {
 
     Node root;
 
-    public void add(int value) {
-        root = addRecursive(root, value);
+    public void add(Integer value) {
+        if (value != null){
+            root = addRecursive(root, value);
+        }
     }
 
     private Node addRecursive(Node current, int value) {
