@@ -52,4 +52,13 @@ public class AlgorithmsController {
 
     }
 
+    @GetMapping("/dailyTemperatures")
+    public int[]  dailyTemperatures () {
+
+        int[] temperatures =  new int[]{73,74,75,71,69,72,76,73};
+
+        return algorithmsUseCase.dailyTemperatures(temperatures);
+
+    }
+
 }
