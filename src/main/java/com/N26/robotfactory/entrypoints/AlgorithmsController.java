@@ -1,6 +1,7 @@
 package com.N26.robotfactory.entrypoints;
 
 import com.N26.robotfactory.domain.model.Node;
+import com.N26.robotfactory.domain.model.TreeNode;
 import com.N26.robotfactory.domain.usecase.AlgorithmsUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,6 +71,18 @@ public class AlgorithmsController {
         Node binaryTree = algorithmsUseCase.createBinaryTree();
 
         return algorithmsUseCase.maxLevelSum(binaryTree);
+
+    }
+
+    @GetMapping("/rightSideView")
+    public List<Integer> rightSideView () {
+
+        TreeNode root = new TreeNode(1,
+                new TreeNode(2, null, new TreeNode(5)), new TreeNode(3,
+                null, new TreeNode(4)
+        ));
+
+        return algorithmsUseCase.rightSideView(root);
 
     }
 
