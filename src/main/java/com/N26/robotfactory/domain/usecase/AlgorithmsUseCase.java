@@ -312,4 +312,41 @@ public class AlgorithmsUseCase {
         return visibleValues;
 
     }
+
+    public void letterCombinationsRecursive(List<String> result, String digits, String current, int index,
+                                            String[] mapping) {
+
+        if (index == digits.length()){
+            result.add(current);
+            return;
+        }
+
+        String letters = mapping[digits.charAt(index) - '0'];
+        for (int i =0; i < letters.length(); i++){
+            letterCombinationsRecursive(result, digits, current + letters.charAt(i), index + 1, mapping);
+        }
+
+    }
+
+    public int[] topKFrequentElements(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i: nums){
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+
+        PriorityQueue<Map.Entry<Integer, Integer>> pq = new PriorityQueue<>((a, b) -> b.getValue() - a.getValue());
+
+        for (Map.Entry entry: map.entrySet()){
+            pq.add(entry);
+        }
+
+        int[] output = new int[k];
+
+        for (int i =0; i < k; i++){
+            output[i] = pq.poll().getKey();
+        }
+
+        return output;
+    }
 }

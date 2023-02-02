@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,6 +84,38 @@ public class AlgorithmsController {
         ));
 
         return algorithmsUseCase.rightSideView(root);
+
+    }
+
+    @GetMapping("/letterCombinations")
+    public List<String> letterCombinations () {
+
+        List<String> result = new ArrayList<String>();
+
+        String[] mapping = {
+                "0",
+                "1",
+                "abc",
+                "def",
+                "ghi",
+                "jkl",
+                "mno",
+                "pqrs",
+                "tuv",
+                "wxyz"
+        };
+
+        algorithmsUseCase.letterCombinationsRecursive(result, "23", "",0, mapping);
+        return result;
+
+    }
+
+    @GetMapping("/topKFrequentElements")
+    public int[] topKFrequentElements () {
+
+        int[] nums =  new int[]{1,1,1,2,2,3};
+
+        return algorithmsUseCase.topKFrequentElements(nums, 2);
 
     }
 
